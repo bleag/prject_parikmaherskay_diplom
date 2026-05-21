@@ -1,35 +1,148 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8">
-<title>Запись | StyleParic</title>
-<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <meta charset="UTF-8">
+    <title>Запись | StyleParic</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        /* базовые стили для страницы (чтобы не было конфликтов) */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .booking-page {
+            position: relative;
+            min-height: 100vh;
+        }
+        .booking-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: url('/static/pp.jpg');
+            background-size: cover;
+            background-position: center;
+            z-index: 0;
+        }
+        .booking-container {
+            position: relative;
+            z-index: 1;
+            max-width: 550px;
+            margin: 50px auto;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 35px 30px;
+            border-radius: 24px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+            backdrop-filter: blur(2px);
+        }
+        .booking-container h2 {
+            text-align: center;
+            margin-bottom: 25px;
+            color: #2d1810;
+            font-size: 28px;
+        }
+        .booking-container input,
+        .booking-container select {
+            width: 100%;
+            padding: 12px 15px;
+            margin: 12px 0;
+            border: 1px solid #ddd;
+            border-radius: 40px;
+            font-size: 16px;
+            transition: 0.2s;
+            background: white;
+        }
+        .booking-container input:focus,
+        .booking-container select:focus {
+            border-color: #f5a623;
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(245,166,35,0.2);
+        }
+        .booking-container button {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #f5a623 0%, #ff6b6b 100%);
+            color: white;
+            border: none;
+            border-radius: 40px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: 0.3s;
+        }
+        .booking-container button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(245,166,35,0.3);
+        }
+        .booking-container a {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            color: #8b5e3c;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        .booking-container a:hover {
+            text-decoration: underline;
+        }
+        .error {
+            color: #e74c3c;
+            text-align: center;
+            margin-top: 15px;
+            font-weight: 500;
+        }
+        header {
+            background: white;
+            padding: 15px 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        .logo {
+            font-size: 22px;
+            font-weight: bold;
+            color: #2d1810;
+        }
+        @media (max-width: 600px) {
+            .booking-container {
+                margin: 20px;
+                padding: 25px 20px;
+            }
+        }
+    </style>
 </head>
 <body>
 
 <header>
-    <div class="logo">Парикмахерская</div>
+    <div class="logo">Парикмахерская "Стиль"</div>
 </header>
 
 <main class="booking-page">
-    <!-- ФОН -->
     <div class="booking-bg"></div>
     
     <div class="booking-container">
-        <h2>Онлайн запись</h2>
+        <h2>✂️ Онлайн запись</h2>
 
         <form method="POST" id="booking-form">
             <input type="text" name="name" placeholder="Ваше имя" required
                    value="{{ name if name else request.form.name if request.method=='POST' else '' }}">
 
-            <input type="tel" name="phone" placeholder="Телефон" required
-                   value="{{ phone if phone else request.form.phone if request.method=='POST' else '' }}">
+            <input type="tel" name="phone" placeholder="89131234567" required
+                    value="{{ phone if phone else request.form.phone if request.method=='POST' else '' }}">
 
-            <select name="service">
-                {% set services = ["Женская стрижка","Мужская стрижка","Окрашивание","Маникюр","Педикюр","Укладка","Лечение волос"] %}
-                {% for s in services %}
-                    <option value="{{ s }}" {% if (service==s) or (request.form.service==s) %}selected{% endif %}>{{ s }}</option>
-                {% endfor %}
+            <select name="service" id="serviceSelect" required>
+                <option value="">Выберите услугу</option>
+                <option value="Мужская стрижка" {% if (service=='Мужская стрижка') or (request.form.service=='Мужская стрижка') %}selected{% endif %}>Мужская стрижка (30 мин)</option>
+                <option value="Женская стрижка" {% if (service=='Женская стрижка') or (request.form.service=='Женская стрижка') %}selected{% endif %}>Женская стрижка (1 час)</option>
+                <option value="Окрашивание" {% if (service=='Окрашивание') or (request.form.service=='Окрашивание') %}selected{% endif %}>Окрашивание (2 часа)</option>
+                <option value="Маникюр" {% if (service=='Маникюр') or (request.form.service=='Маникюр') %}selected{% endif %}>Маникюр (2 часа)</option>
+                <option value="Педикюр" disabled style="display:none;">Педикюр (скрыто)</option>
+                <option value="Укладка" disabled style="display:none;">Укладка (скрыто)</option>
+                <option value="Лечение волос" disabled style="display:none;">Лечение волос (скрыто)</option>
             </select>
 
             <input type="date" name="date" id="date-input" required
@@ -46,7 +159,7 @@
             <button type="submit">Записаться</button>
         </form>
 
-        <a href="/">На главную</a>
+        <a href="/">← На главную</a>
 
         {% if error %}
         <p class="error">{{ error }}</p>
@@ -54,97 +167,329 @@
     </div>
 </main>
 
-<style>
-.booking-page {
-    position: relative;
-    min-height: 100vh;
-}
-
-.booking-bg {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-image: url('/static/pp.jpg');
-    background-size: cover;
-    background-position: center;
-    z-index: 0;
-}
-
-.booking-container {
-    position: relative;
-    z-index: 1;
-    max-width: 500px;
-    margin: 50px auto;
-    background: rgba(255, 255, 255, 0.9);
-    padding: 30px;
-    border-radius: 20px;
-}
-
-.booking-container input,
-.booking-container select {
-    width: 100%;
-    padding: 10px;
-    margin: 10px 0;
-    box-sizing: border-box;
-}
-
-.booking-container button {
-    width: 100%;
-    padding: 12px;
-    background: #f5a623;
-    color: white;
-    border: none;
-    cursor: pointer;
-}
-
-.booking-container a {
-    display: block;
-    text-align: center;
-    margin-top: 15px;
-}
-</style>
-
 <script>
-const dateInput = document.getElementById('date-input');
-const timeSelect = document.getElementById('time-select');
-const masterSelect = document.getElementById('master-select');
-
-const times = ["09:00","09:30","10:00","10:30","11:00","11:30",
-               "12:00","12:30","13:00","13:30","14:00","14:30",
-               "15:00","15:30","16:00","16:30","17:00","17:30",
-               "18:00","18:30","19:00","19:30","20:00"];
-
-dateInput.addEventListener('change', function() {
-    const date = this.value;
-    if (!date) return;
+    // ----- ДЛИТЕЛЬНОСТЬ УСЛУГ В МИНУТАХ -----
+    const serviceDurationMap = {
+        "Мужская стрижка": 30,
+        "Женская стрижка": 60,
+        "Окрашивание": 120,
+        "Маникюр": 120
+    };
     
-    fetch(`/get_available?date=${date}`)
-        .then(response => response.json())
-        .then(data => {
+    // Базовые временные слоты с 9:00 до 20:00 с шагом 30 минут
+    const allTimeSlots = [
+        "09:00", "09:30", "10:00", "10:30", "11:00", "11:30",
+        "12:00", "12:30", "13:00", "13:30", "14:00", "14:30",
+        "15:00", "15:30", "16:00", "16:30", "17:00", "17:30",
+        "18:00", "18:30", "19:00", "19:30", "20:00"
+    ];
+
+    // Функция для преобразования "HH:MM" в минуты от начала дня
+    function timeToMinutes(timeStr) {
+        const [hours, minutes] = timeStr.split(':').map(Number);
+        return hours * 60 + minutes;
+    }
+
+    // Функция для преобразования минут обратно в "HH:MM"
+    function minutesToTime(minutes) {
+        const hours = Math.floor(minutes / 60);
+        const mins = minutes % 60;
+        return `${String(hours).padStart(2, '0')}:${String(mins).padStart(2, '0')}`;
+    }
+
+    // Получение элемента DOM
+    const dateInput = document.getElementById('date-input');
+    const timeSelect = document.getElementById('time-select');
+    const masterSelect = document.getElementById('master-select');
+    const serviceSelect = document.getElementById('serviceSelect');
+    
+    // Хранилище для занятых интервалов с сервера (массив объектов {start, end, master})
+    let busyIntervals = []; 
+    let mastersList = [];    // список мастеров с сервера
+
+    // Загрузка занятости и мастеров при изменении даты
+    async function loadAvailability() {
+        const date = dateInput.value;
+        if (!date) {
+            // Если дата не выбрана, очищаем селекты
             timeSelect.innerHTML = '<option value="">Выберите время</option>';
-            times.forEach(t => {
-                if (!data.busy.includes(t)) {
-                    const option = document.createElement('option');
-                    option.value = t;
-                    option.textContent = t;
-                    timeSelect.appendChild(option);
+            masterSelect.innerHTML = '<option value="">Выбрать мастера</option>';
+            return;
+        }
+        
+        try {
+            const response = await fetch(`/get_available?date=${date}`);
+            if (!response.ok) {
+                console.warn("Ошибка получения данных, используем fallback");
+                busyIntervals = [];
+                mastersList = ["Анна", "Екатерина", "Дмитрий"];
+            } else {
+                const data = await response.json();
+                // Ожидаем, что сервер возвращает busy — массив строк занятых слотов (старый формат)
+                // ИЛИ же может вернуть busyIntervals (новый формат) — сделаем универсально.
+                // Чтобы учесть длительность, мы перестроим занятые интервалы из busy слотов (предполагаем, что занят каждый отдельный слот).
+                // Но для корректной работы с длительностью лучше бэкенд отдавал бы массив занятых промежутков.
+                // Однако мы сделаем умный клиент: если сервер отдаёт data.busy (массив строк времени, которые заняты в 30-минутных слотах),
+                // то мы сами сгенерируем busyIntervals для каждого мастера. 
+                // Также ожидаем data.masters.
+                
+                if (data.masters && Array.isArray(data.masters)) {
+                    mastersList = data.masters;
+                } else {
+                    mastersList = ["Анна", "Екатерина", "Дмитрий", "Ольга"];
+                }
+                
+                // Преобразуем данные с сервера в карту занятых слотов по мастерам (учитываем старую структуру)
+                // Сервер может отдавать { busy: ["10:00","10:30"], masters: [...] }
+                // Мы будем для каждого мастера генерировать список занятых тайм-слотов, чтобы потом проверять пересечения с учетом длительности.
+                // Для простоты, если сервер возвращает busy (глобальные занятые слоты без привязки к мастеру), то считаем, что эти слоты заняты у любого мастера.
+                // Чтобы сделать правильно, мы создадим объект: для каждого мастера список занятых минут.
+                
+                let rawBusySlots = [];
+                if (data.busy && Array.isArray(data.busy)) {
+                    rawBusySlots = data.busy; // ["09:00","10:00"] формат
+                }
+                
+                // Создаём карту: для каждого мастера — массив занятых интервалов (начало, конец)
+                // По умолчанию все мастера имеют одни и те же занятые слоты (если бэк не разделяет по мастерам)
+                // Но для гибкости: если есть отдельное поле masterBusy, можно использовать. Сейчас простой вариант.
+                // Для адекватной работы с длительностью сгенерируем занятые промежутки длительностью 30 мин из rawBusySlots
+                // (ведь бэкенд обычно сохраняет записи с длительностью, но на данном этапе нам нужно предотвратить пересечения).
+                // Модернизируем: подготовим для каждого мастера массив занятых интервалов [startMin, endMin]
+                window.busyIntervalsByMaster = {};
+                mastersList.forEach(master => {
+                    let intervals = [];
+                    // Генерируем из rawBusySlots (занятые 30-минутные отрезки) интервалы, но чтобы точно учитывать будущие записи,
+                    // на сервере длительность уже учтена? В идеале бэкенд присылает занятые промежутки (start/end).
+                    // Так как учебный проект, реализуем дополнительно: при изменении услуги будем запрашивать пересечения,
+                    // а занятость будем моделировать через уже существующие записи. 
+                    // Используем сырые busy-слоты как моменты, которые нельзя начинать в это время (занято начало слота).
+                    intervals = rawBusySlots.map(slot => {
+                        const startMin = timeToMinutes(slot);
+                        return { start: startMin, end: startMin + 30 }; // стандартный слот 30 мин
+                    });
+                    // также можно добавить логику, что если есть запись на 2 часа, то перекрываются все слоты внутри.
+                    // но упростим: добавим дополнительную обработку из эмуляции данных (если сервер не предоставляет длительность)
+                    busyIntervalsByMaster[master] = intervals;
+                });
+                
+                // Дополнительно: если сервер вернул детальные busyIntervals (например, для каждого мастера), то перезаписываем.
+                if (data.detailedBusy && typeof data.detailedBusy === 'object') {
+                    for (let master in data.detailedBusy) {
+                        if (busyIntervalsByMaster[master]) {
+                            busyIntervalsByMaster[master] = data.detailedBusy[master].map(iv => ({
+                                start: timeToMinutes(iv.start),
+                                end: timeToMinutes(iv.end)
+                            }));
+                        }
+                    }
+                }
+                
+                // Сохраним глобально для использования в пересчете времени
+                window.currentBusyMap = busyIntervalsByMaster;
+            } 
+        } catch (err) {
+            console.error("Ошибка загрузки занятости:", err);
+            mastersList = ["Анна", "Екатерина", "Дмитрий"];
+            window.currentBusyMap = {};
+            mastersList.forEach(m => { window.currentBusyMap[m] = []; });
+        }
+        
+        // Обновляем список мастеров в селекте
+        masterSelect.innerHTML = '<option value="">Выбрать мастера</option>';
+        mastersList.forEach(master => {
+            const option = document.createElement('option');
+            option.value = master;
+            option.textContent = master;
+            masterSelect.appendChild(option);
+        });
+        
+        // Если уже выбрана услуга и мастер, обновляем время
+        updateAvailableTimes();
+    }
+    
+    // Функция получения длительности выбранной услуги
+    function getSelectedDuration() {
+        const service = serviceSelect.value;
+        return serviceDurationMap[service] || 0;
+    }
+    
+    // Проверка, можно ли записать пользователя на выбранное время с учетом длительности
+    function isTimeSlotAvailable(startTimeStr, masterName, durationMinutes) {
+        if (!masterName || !durationMinutes) return false;
+        const startMin = timeToMinutes(startTimeStr);
+        const endMin = startMin + durationMinutes;
+        // конечное время не позже 20:30 (максимум 20:00 + 30мин, но если 2ч услуга, то не позже 20:00)
+        if (endMin > timeToMinutes("20:00") && durationMinutes > 30) {
+            // если услуга длинная и выходит за 20:00 — нельзя
+            if (endMin > timeToMinutes("20:00")) return false;
+        }
+        if (startMin < timeToMinutes("09:00") || startMin > timeToMinutes("20:00")) return false;
+        
+        const busyList = (window.currentBusyMap && window.currentBusyMap[masterName]) ? window.currentBusyMap[masterName] : [];
+        
+        // Проверка пересечений с существующими занятостями
+        for (let interval of busyList) {
+            const busyStart = interval.start;
+            const busyEnd = interval.end;
+            // Если новый интервал [startMin, endMin) пересекается с занятым
+            if (Math.max(startMin, busyStart) < Math.min(endMin, busyEnd)) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    // Генерация доступных временных слотов с учетом выбранного мастера и длительности услуги
+    function updateAvailableTimes() {
+        const selectedMaster = masterSelect.value;
+        const duration = getSelectedDuration();
+        const dateVal = dateInput.value;
+        
+        if (!selectedMaster || !duration || !dateVal) {
+            timeSelect.innerHTML = '<option value="">Выберите время</option>';
+            return;
+        }
+        
+        // Собираем все слоты, которые подходят по времени начала (не стартуем позже 20:00 - duration)
+        const lastPossibleStart = timeToMinutes("20:00") - duration;
+        const availableTimes = [];
+        
+        for (let slot of allTimeSlots) {
+            const slotMinutes = timeToMinutes(slot);
+            // Нельзя начать, если конец услуги выходит за рабочее время
+            if (slotMinutes + duration > timeToMinutes("20:00")) continue;
+            // Проверяем доступность для данного мастера и длительности
+            if (isTimeSlotAvailable(slot, selectedMaster, duration)) {
+                availableTimes.push(slot);
+            }
+        }
+        
+        // Заполняем select времени
+        timeSelect.innerHTML = '<option value="">Выберите время</option>';
+        if (availableTimes.length === 0) {
+            const disabledOpt = document.createElement('option');
+            disabledOpt.textContent = 'Нет свободных окон';
+            disabledOpt.disabled = true;
+            timeSelect.appendChild(disabledOpt);
+        } else {
+            availableTimes.forEach(time => {
+                const option = document.createElement('option');
+                option.value = time;
+                option.textContent = time;
+                timeSelect.appendChild(option);
+            });
+        }
+    }
+    
+    // Слушатели изменений
+    function initEventListeners() {
+        dateInput.addEventListener('change', () => {
+            loadAvailability().then(() => {
+                // после загрузки данных дополнительно пересчитать времена при уже выбранном мастере
+                if (masterSelect.value) {
+                    updateAvailableTimes();
                 }
             });
-
-            masterSelect.innerHTML = '<option value="">Выбрать мастера</option>';
-            if (data.masters && data.masters.length > 0) {
-                data.masters.forEach(m => {
-                    const option = document.createElement('option');
-                    option.value = m;
-                    option.textContent = m;
-                    masterSelect.appendChild(option);
-                });
+        });
+        
+        masterSelect.addEventListener('change', () => {
+            updateAvailableTimes();
+        });
+        
+        serviceSelect.addEventListener('change', () => {
+            // при смене услуги сбрасываем выбранное время, т.к. сетка может измениться
+            timeSelect.innerHTML = '<option value="">Выберите время</option>';
+            if (masterSelect.value && dateInput.value) {
+                updateAvailableTimes();
             }
         });
-});
-</script>
+        
+        // Дополнительно при первой загрузке, если дата уже есть
+        if (dateInput.value) {
+            loadAvailability().then(() => {
+                if (masterSelect.value) updateAvailableTimes();
+            });
+        }
+    }
+    
+    // Для совместимости с уже существующим кодом: переопределяем старый обработчик change даты, 
+    // но оставляем возможность параллельно подгрузить данные
+    if (dateInput) {
+        // чтобы не сломать старую логику, полностью заменяем слушатель, но с расширенным функционалом
+        // Удалим предыдущие обработчики, если есть (они были в inline), просто переопределим
+        const newDateHandler = async () => {
+            await loadAvailability();
+            if (masterSelect.value) updateAvailableTimes();
+        };
+        dateInput.removeEventListener('change', loadAvailability);
+        dateInput.addEventListener('change', newDateHandler);
+        
+        // инициализация, если дата предзаполнена
+        if (dateInput.value) {
+            setTimeout(() => {
+                loadAvailability().then(() => {
+                    if (masterSelect.value) updateAvailableTimes();
+                });
+            }, 100);
+        }
+    }
+    
+    // Также, если мастер по умолчанию уже выбран после обновления страницы (например, после ошибки)
+    window.addEventListener('DOMContentLoaded', () => {
+        // Дополнительная принудительная простановка
+        if (dateInput.value && !window._availabilityLoaded) {
+            loadAvailability().then(() => {
+                if (masterSelect.value) updateAvailableTimes();
+            });
+            window._availabilityLoaded = true;
+        }
+        initEventListeners();
+        
+        // Если селект мастера изменился вручную, то обновим время
+        masterSelect.addEventListener('change', () => {
+            updateAvailableTimes();
+        });
+        serviceSelect.addEventListener('change', () => {
+            timeSelect.innerHTML = '<option value="">Выберите время</option>';
+            if (masterSelect.value && dateInput.value) updateAvailableTimes();
+        });
+    });
+    
+    // Небольшой fallback для старых версий, чтобы при первом выборе даты всё работало гладко
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => {
+            if (dateInput.value) loadAvailability();
+        });
+    } else {
+        if (dateInput.value) loadAvailability();
+    }
+    
+        // ===== ПРОСТАЯ ПРОВЕРКА ТЕЛЕФОНА =====
+    function validatePhone(phone) {
+        // Убираем все пробелы, скобки, дефисы и плюс
+        let cleaned = phone.replace(/[\s\-\(\)\+]/g, '');
+        // Проверяем что только цифры и длина 11 символов (например 89131234567)
+        return /^\d{11}$/.test(cleaned);
+    }
 
+    // Валидация перед отправкой формы
+    const bookingForm = document.getElementById('booking-form');
+    if (bookingForm) {
+        bookingForm.addEventListener('submit', function(e) {
+            const phoneField = document.querySelector('input[name="phone"]');
+            if (!validatePhone(phoneField.value)) {
+                e.preventDefault();
+                alert('❌ Введите корректный номер телефона (11 цифр, например: 89131234567)');
+                phoneField.focus();
+                return false;
+            }
+        });
+    }
+    // ===== КОНЕЦ ПРОВЕРКИ =====
+
+    // Добавим стили для disabled option (педов)
+    console.log("Скрипт с длительностью (мужские 30мин, женские 60мин, окраш/маникюр 120мин) активирован");
+</script>
 </body>
 </html>

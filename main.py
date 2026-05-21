@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, redirect, session, abort
 import psycopg2
 from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
-
+import re
 app = Flask(__name__)
 app.secret_key = "secret123"
 
@@ -15,6 +15,37 @@ def get_db_connection():
         password="123"        # пароль
     )
     return conn
+
+
+def time_to_minutes(time_str):
+    if not time_str:
+        return 0
+    h, m = map(int, time_str.split(':'))
+    return h * 60 + m
+
+def minutes_to_time(minutes):
+    h = minutes // 60
+    m = minutes % 60
+    return f"{h:02d}:{m:02d}"
+
+def get_service_duration(service):
+    durations = {
+        "Мужская стрижка": 30,
+        "Женская стрижка": 60,
+        "Окрашивание": 120,
+        "Маникюр": 120
+    }
+    return durations.get(service, 30)
+
+def validate_phone(phone):
+    """Простая проверка: 11 цифр (например 89131234567)"""
+    if not phone:
+        return False
+    # Убираем всё, кроме цифр
+    cleaned = re.sub(r'\D', '', phone)
+    # Проверяем, что ровно 11 цифр
+    return len(cleaned) == 11
+
 
 # -------- Контекст для шаблонов --------
 @app.context_processor
@@ -142,54 +173,133 @@ def booking():
     if "username" not in session:
         return redirect("/login")
 
-    busy_times = []
-    selected_date = request.args.get("date")  # для первой загрузки страницы
-
     if request.method == "POST":
         name = request.form["name"]
         phone = request.form["phone"]
         service = request.form["service"]
         date = request.form["date"]
         time = request.form["time"]
-        master = request.form["master"]  # получаем мастера
-
-        conn = get_db_connection()
-        cursor = conn.cursor()
-
-        # Проверяем занятое время для этого мастера
-        cursor.execute(
-            "SELECT * FROM appointments WHERE date=%s AND time=%s AND master=%s",
-            (date, time, master)
-        )
-        busy = cursor.fetchone()
-        if busy:
-            cursor.close()
-            conn.close()
+        master = request.form["master"]
+        
+        # ===== ПРОВЕРКА ТЕЛЕФОНА =====
+        cleaned_phone = re.sub(r'\D', '', phone)
+        if len(cleaned_phone) != 11:
             return render_template(
                 "booking.html",
-                error="Это время уже занято",
+                error="❌ Введите корректный номер телефона (11 цифр, например: 89131234567)",
                 name=name,
                 phone=phone,
                 service=service,
                 selected_date=date
             )
-
-        # Вставляем запись с мастером
+        phone = cleaned_phone
+        # ===== КОНЕЦ ПРОВЕРКИ ТЕЛЕФОНА =====
+        
+        # ===== ПРОВЕРКА: сколько записей пользователь сделал СЕГОДНЯ =====
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        
+        from datetime import datetime
+        today_start = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
+        
         cursor.execute("""
-            INSERT INTO appointments (username, name, phone, service, date, time, master)
-            VALUES (%s, %s, %s, %s, %s, %s, %s)
-        """, (session["username"], name, phone, service, date, time, master))
-
-        conn.commit()
-        cursor.close()
-        conn.close()
-        return redirect("/my_bookings")  # можно сразу на страницу "Мои записи"
-
-    return render_template(
-        "booking.html",
-        busy_times=busy_times,
-        selected_date=selected_date
-    )
+            SELECT COUNT(*) FROM appointments 
+            WHERE username=%s AND created_at >= %s
+        """, (session["username"], today_start))
+        today_bookings = cursor.fetchone()[0]
+        
+        print(f"DEBUG: Пользователь {session['username']} сделал {today_bookings} записей сегодня")
+        
+        if today_bookings >= 5:
+            cursor.close()
+            conn.close()
+            return render_template(
+                "booking.html",
+                error=f"⚠️ ЗАЩИТА ОТ СПАМА: Вы уже сделали {today_bookings} записей сегодня. Максимум 5 записей в день!",
+                name=name,
+                phone=phone,
+                service=service,
+                selected_date=date
+            )
+        # ===== КОНЕЦ ПРОВЕРКИ =====
+        
+        duration = get_service_duration(service)
+        new_start = time_to_minutes(time)
+        new_end = new_start + duration
+        
+        # ===== ПРОВЕРКА: не выходит ли услуга за рабочее время =====
+        WORK_END_MINUTES = time_to_minutes("20:00")
+        
+        if new_end > WORK_END_MINUTES:
+            cursor.close()
+            conn.close()
+            return render_template(
+                "booking.html",
+                error=f"Услуга '{service}' длится {duration} минут и не может быть начата в {time}, так как закончится после 20:00. Пожалуйста, выберите более раннее время.",
+                name=name,
+                phone=phone,
+                service=service,
+                selected_date=date
+            )
+        # ===== КОНЕЦ ПРОВЕРКИ =====
+        
+        try:
+            # Получаем все записи этого мастера на эту дату
+            cursor.execute("""
+                SELECT time, service FROM appointments 
+                WHERE date=%s AND master=%s AND status != 'Завершена'
+            """, (date, master))
+            existing = cursor.fetchall()
+            
+            # Проверяем пересечение интервалов
+            is_busy = False
+            for ex in existing:
+                ex_time = ex[0].strftime("%H:%M") if hasattr(ex[0], 'strftime') else ex[0]
+                ex_service = ex[1]
+                ex_start = time_to_minutes(ex_time)
+                ex_end = ex_start + get_service_duration(ex_service)
+                
+                if new_start < ex_end and new_end > ex_start:
+                    is_busy = True
+                    break
+            
+            if is_busy:
+                cursor.close()
+                conn.close()
+                return render_template(
+                    "booking.html",
+                    error="Это время уже занято у выбранного мастера",
+                    name=name,
+                    phone=phone,
+                    service=service,
+                    selected_date=date
+                )
+            
+            # Сохраняем запись с created_at
+            cursor.execute("""
+                INSERT INTO appointments (username, name, phone, service, date, time, master, status, created_at)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+            """, (session["username"], name, phone, service, date, time, master, "Ожидает", datetime.now()))
+            
+            conn.commit()
+            
+        except Exception as e:
+            print(f"Ошибка при бронировании: {e}")
+            return render_template(
+                "booking.html",
+                error="Произошла ошибка при записи. Попробуйте позже.",
+                name=name,
+                phone=phone,
+                service=service,
+                selected_date=date
+            )
+        finally:
+            cursor.close()
+            conn.close()
+        
+        return redirect("/my_bookings")
+    
+    return render_template("booking.html", selected_date=request.args.get("date"))
 
 # -------- Мои бронирования --------
 @app.route("/my_bookings")
@@ -282,7 +392,6 @@ def admin_create():
     if "username" not in session:
         return redirect("/login")
 
-    # Можно добавить проверку на роль администратора, если есть поле role в users
     conn = get_db_connection()
     cursor = conn.cursor()
 
@@ -293,6 +402,24 @@ def admin_create():
         date = request.form["date"]
         time = request.form["time"]
         master = request.form["master"]
+        
+        # ===== ПРОСТАЯ ПРОВЕРКА ТЕЛЕФОНА =====
+        # Убираем всё, кроме цифр
+        cleaned_phone = re.sub(r'\D', '', phone)
+        if len(cleaned_phone) != 11:
+            cursor.close()
+            conn.close()
+            return render_template(
+                "admin_create.html",
+                error="❌ Введите корректный номер телефона (11 цифр, например: 89131234567)",
+                name=name,
+                phone=phone,
+                service=service,
+                selected_date=date
+            )
+        # Сохраняем очищенный номер в БД
+        phone = cleaned_phone
+        # ===== КОНЕЦ ПРОВЕРКИ =====
 
         cursor.execute("SELECT * FROM appointments WHERE date=%s AND time=%s AND master=%s",
                (date, time, master))
@@ -458,28 +585,103 @@ def update_schedule():
 
 from flask import jsonify, request
 
+
 @app.route("/get_available")
 def get_available():
     date = request.args.get("date")
+    if not date:
+        return jsonify({"busy": [], "masters": [], "detailedBusy": {}})
+    
     conn = get_db_connection()
     cursor = conn.cursor()
-
-    # Времена, которые уже заняты
-    cursor.execute("SELECT time FROM appointments WHERE date=%s", (date,))
-    busy_times = [row[0].strftime("%H:%M") for row in cursor.fetchall()]
-
-    # Мастера, которые работают в этот день
+    
+    # Получаем мастеров, которые работают в этот день
     cursor.execute("""
         SELECT master_name 
         FROM schedule
-        WHERE date=%s AND note='Работает'
+        WHERE date=%s AND (note='Работает' OR note IS NULL)
     """, (date,))
     masters = [row[0] for row in cursor.fetchall()]
-
+    
+    if not masters:
+        masters = ["Ирина", "Марина", "Ольга"]
+    
+    # Получаем записи на эту дату
+    cursor.execute("""
+        SELECT master, time, service
+        FROM appointments
+        WHERE date=%s AND status != 'Завершена'
+    """, (date,))
+    bookings = cursor.fetchall()
     cursor.close()
     conn.close()
+    
+    WORK_END_MINUTES = time_to_minutes("20:00")  # 20:00
+    
+    # Формируем занятые интервалы для каждого мастера
+    detailed_busy = {master: [] for master in masters}
+    
+    for booking in bookings:
+        master = booking[0]
+        time_str = booking[1].strftime("%H:%M") if hasattr(booking[1], 'strftime') else booking[1]
+        service = booking[2]
+        
+        if master in detailed_busy:
+            start_min = time_to_minutes(time_str)
+            duration = get_service_duration(service)
+            end_min = start_min + duration
+            
+            detailed_busy[master].append({
+                "start": minutes_to_time(start_min),
+                "end": minutes_to_time(end_min)
+            })
+    
+    return jsonify({
+        "busy": [],
+        "masters": masters,
+        "detailedBusy": detailed_busy,
+        "workEnd": "20:00"  # отправляем клиенту рабочий конец дня
+    })
 
-    return jsonify({"busy": busy_times, "masters": masters})
+
+@app.route("/admin/stats")
+@admin_required
+def admin_stats():
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    # Общее количество записей
+    cursor.execute("SELECT COUNT(*) FROM appointments")
+    total_bookings = cursor.fetchone()[0]
+    
+    # Записей на сегодня
+    today = datetime.now().strftime("%Y-%m-%d")
+    cursor.execute("SELECT COUNT(*) FROM appointments WHERE date=%s", (today,))
+    today_bookings = cursor.fetchone()[0]
+    
+    # Самая популярная услуга
+    cursor.execute("""
+        SELECT service, COUNT(*) as cnt 
+        FROM appointments 
+        GROUP BY service 
+        ORDER BY cnt DESC 
+        LIMIT 1
+    """)
+    top_service = cursor.fetchone()
+    top_service_name = top_service[0] if top_service else "Нет данных"
+    
+    # Количество уникальных клиентов
+    cursor.execute("SELECT COUNT(DISTINCT username) FROM appointments")
+    total_clients = cursor.fetchone()[0]
+    
+    cursor.close()
+    conn.close()
+    
+    return render_template("admin_stats.html", 
+                          total_bookings=total_bookings,
+                          today_bookings=today_bookings,
+                          top_service=top_service_name,
+                          total_clients=total_clients)
 
 
 @app.route("/admin_notifications")

@@ -306,6 +306,72 @@ function updateTimes() {
         });
 }
 
+// ===== ФУНКЦИИ ДЛЯ ВАЛИДАЦИИ ТЕЛЕФОНА =====
+function validatePhone(phone) {
+    // Убираем все лишние символы
+    let cleaned = phone.replace(/[\s\-\(\)\+]/g, '');
+    
+    // Если начинается с 8 и длина 11, убираем 8
+    if (cleaned.startsWith('8') && cleaned.length === 11) {
+        cleaned = cleaned.slice(1);
+    }
+    // Если начинается с 7 и длина 11, убираем 7
+    if (cleaned.startsWith('7') && cleaned.length === 11) {
+        cleaned = cleaned.slice(1);
+    }
+    
+    // Должно быть 10 цифр
+    return /^\d{10}$/.test(cleaned);
+}
+
+function formatPhone(input) {
+    let value = input.value.replace(/\D/g, '');
+    
+    if (value.length === 0) {
+        input.value = '';
+        return;
+    }
+    
+    let formatted = '+7 (';
+    
+    if (value.length >= 1) {
+        formatted += value.slice(0, 3);
+    }
+    if (value.length >= 4) {
+        formatted += ') ' + value.slice(3, 6);
+    }
+    if (value.length >= 7) {
+        formatted += '-' + value.slice(6, 8);
+    }
+    if (value.length >= 9) {
+        formatted += '-' + value.slice(8, 10);
+    }
+    
+    input.value = formatted;
+}
+// ===== КОНЕЦ ФУНКЦИЙ =====
+
+// ===== ПРИВЯЗКА К ПОЛЮ ТЕЛЕФОНА =====
+const phoneField = document.getElementById('phone');
+if (phoneField) {
+    phoneField.addEventListener('input', function() {
+        formatPhone(this);
+    });
+}
+// ===== КОНЕЦ ПРИВЯЗКИ =====
+
+// ===== ВАЛИДАЦИЯ ПЕРЕД ОТПРАВКОЙ ФОРМЫ =====
+document.getElementById('admin-create-form').addEventListener('submit', function(e) {
+    const phoneInput = document.getElementById('phone');
+    if (!validatePhone(phoneInput.value)) {
+        e.preventDefault();
+        alert('❌ Введите корректный номер телефона (10 цифр после +7)');
+        phoneInput.focus();
+        return false;
+    }
+});
+// ===== КОНЕЦ ВАЛИДАЦИИ =====
+
 dateInput.addEventListener('change', updateTimes);
 
 if (dateInput.value) {

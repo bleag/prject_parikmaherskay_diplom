@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Статистика | Парикмахерская "Стиль"</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5efe8;
+        }
+
+        /* ===== ШАПКА (такая же как на главной) ===== */
+        .new-header {
+            background: white;
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(245, 166, 35, 0.2);
+        }
+        
+        .new-header .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 12px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        
+        .new-header .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-shrink: 0;
+            text-decoration: none;
+        }
+        
+        .new-header .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #f5a623 0%, #ff6b6b 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .new-header .logo-icon i {
+            font-size: 22px;
+            color: white;
+        }
+        
+        .new-header .logo-text {
+            font-size: 20px;
+            font-weight: 800;
+            color: #2d1810;
+            white-space: nowrap;
+        }
+        
+        .new-header .logo-text span {
+            color: #f5a623;
+        }
+        
+        .new-header .nav-left {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            flex-wrap: wrap;
+        }
+        
+        .new-header .nav-left a {
+            text-decoration: none;
+            color: #8b5e3c;
+            font-weight: 500;
+            padding: 10px 20px;
+            border-radius: 30px;
+            transition: all 0.3s ease;
+            font-size: 14px;
+            background: #fef5ea;
+        }
+        
+        .new-header .nav-left a:hover {
+            background: #f5a623;
+            color: white;
+            transform: translateY(-2px);
+        }
+        
+        .new-header .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-shrink: 0;
+        }
+        
+        .new-header .btn-action {
+            background: linear-gradient(135deg, #f5a623 0%, #ff6b6b 100%);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+        
+        .new-header .btn-action:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(245, 166, 35, 0.3);
+        }
+
+        /* ===== СТАТИСТИКА ===== */
+        .stats-container {
+            max-width: 1200px;
+            margin: 60px auto;
+            padding: 0 20px;
+        }
+        
+        .stats-header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+        
+        .stats-header h1 {
+            font-size: 36px;
+            color: #2d1810;
+            margin-bottom: 15px;
+        }
+        
+        .stats-header p {
+            color: #8b5e3c;
+            font-size: 18px;
+        }
+        
+        .stats-header p i {
+            margin-right: 8px;
+            color: #f5a623;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            margin-bottom: 50px;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 30px 20px;
+            border-radius: 24px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            border: 1px solid rgba(245, 166, 35, 0.15);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #f5a623, #ff6b6b);
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
+        }
+        
+        .stat-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+        
+        .stat-number {
+            font-size: 52px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #f5a623 0%, #ff6b6b 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin: 10px 0;
+            line-height: 1;
+        }
+        
+        .stat-label {
+            color: #666;
+            font-size: 16px;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+        }
+        
+        .stats-actions {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+        
+        .btn-back, .btn-refresh {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 30px;
+            border-radius: 40px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-back {
+            background: #8b5e3c;
+            color: white;
+        }
+        
+        .btn-back:hover {
+            background: #6b4226;
+            transform: translateY(-2px);
+        }
+        
+        .btn-refresh {
+            background: #fef5ea;
+            color: #8b5e3c;
+            border: 1px solid #f5a623;
+        }
+        
+        .btn-refresh:hover {
+            background: #f5a623;
+            color: white;
+            transform: translateY(-2px);
+        }
+        
+        /* Адаптив */
+        @media (max-width: 768px) {
+            .stats-container {
+                margin: 30px auto;
+            }
+            .stats-header h1 {
+                font-size: 28px;
+            }
+            .stat-number {
+                font-size: 40px;
+            }
+            .new-header .container {
+                padding: 12px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ШАПКА -->
+<header class="new-header">
+    <div class="container">
+        <a href="/" class="logo-area" style="text-decoration: none;">
+            <div class="logo-icon">
+                <i class="fas fa-scissors"></i>
+            </div>
+            <div class="logo-text">Парикмахерская <span>"Стиль"</span></div>
+        </a>
+        
+        <div class="nav-left">
+            <a href="/">Главная</a>
+            <a href="/about">О нас</a>
+            <a href="/services">Услуги</a>
+        </div>
+        
+        <div class="nav-right">
+            <a href="/booking" class="btn-action">Записаться</a>
+            {% if session.username %}
+                <a href="/my_bookings" class="btn-action" style="background: #8b5e3c;">Мои записи</a>
+            {% else %}
+                <a href="/login" class="btn-action" style="background: #8b5e3c;">Войти</a>
+            {% endif %}
+        </div>
+    </div>
+</header>
+
+<!-- СТАТИСТИКА -->
+<div class="stats-container">
+    <div class="stats-header">
+        <h1>📊 Статистика салона</h1>
+        <p><i class="fas fa-chart-line"></i> Актуальные данные на сегодня</p>
+    </div>
+    
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon">📅</div>
+            <div class="stat-number">{{ total_bookings }}</div>
+            <div class="stat-label">Всего записей</div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-icon">⭐</div>
+            <div class="stat-number">{{ today_bookings }}</div>
+            <div class="stat-label">Записей на сегодня</div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-icon">✂️</div>
+            <div class="stat-number">{{ top_service }}</div>
+            <div class="stat-label">Самая популярная услуга</div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-icon">👥</div>
+            <div class="stat-number">{{ total_clients }}</div>
+            <div class="stat-label">Всего клиентов</div>
+        </div>
+    </div>
+    
+    <div class="stats-actions">
+        <a href="/admin" class="btn-back"><i class="fas fa-arrow-left"></i> Назад в админку</a>
+        <a href="/admin/stats" class="btn-refresh"><i class="fas fa-sync-alt"></i> Обновить</a>
+    </div>
+</div>
+
+</body>
+</html>
