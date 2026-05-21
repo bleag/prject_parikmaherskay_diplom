@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Парикмахерская "Стиль"</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #fef9f2;
+            color: #2d1810;
+        }
+
+        /* ===== НОВАЯ ШАПКА (без изменений, стили как у вас) ===== */
+        .new-header {
+            background: white;
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(245, 166, 35, 0.2);
+        }
+        
+        .new-header .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 12px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        
+        .new-header .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-shrink: 0;
+        }
+        
+        .new-header .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #f5a623 0%, #ff6b6b 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .new-header .logo-icon i {
+            font-size: 22px;
+            color: white;
+        }
+        
+        .new-header .logo-text {
+            font-size: 20px;
+            font-weight: 800;
+            color: #2d1810;
+            white-space: nowrap;
+        }
+        
+        .new-header .logo-text span {
+            color: #f5a623;
+        }
+        
+        .new-header .nav-left {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            flex-wrap: wrap;
+        }
+        
+        .new-header .nav-left a {
+            text-decoration: none;
+            color: #8b5e3c;
+            font-weight: 500;
+            padding: 10px 20px;
+            border-radius: 30px;
+            transition: all 0.3s ease;
+            font-size: 14px;
+            background: #fef5ea;
+        }
+        
+        .new-header .nav-left a:hover {
+            background: #f5a623;
+            color: white;
+            transform: translateY(-2px);
+        }
+        
+        .new-header .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-shrink: 0;
+        }
+        
+        .new-header .nav-right .btn-action {
+            background: linear-gradient(135deg, #f5a623 0%, #ff6b6b 100%);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+        
+        .new-header .nav-right .btn-action:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(245, 166, 35, 0.3);
+        }
+        
+        .new-header .profile-menu {
+            position: relative;
+            cursor: pointer;
+        }
+        
+        .new-header .profile-circle {
+            width: 42px;
+            height: 42px;
+            background: linear-gradient(135deg, #f5a623 0%, #ff6b6b 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 18px;
+            transition: all 0.3s ease;
+        }
+        
+        .new-header .profile-circle:hover {
+            transform: scale(1.05);
+        }
+        
+        .new-header .profile-dropdown {
+            position: absolute;
+            top: 55px;
+            right: 0;
+            background: white;
+            min-width: 220px;
+            border-radius: 16px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 100;
+            border: 1px solid rgba(245, 166, 35, 0.2);
+        }
+        
+        .new-header .profile-menu.active .profile-dropdown {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .new-header .profile-dropdown p {
+            padding: 15px 20px;
+            font-weight: 600;
+            color: #2d1810;
+            border-bottom: 1px solid #f0e0d4;
+            margin: 0;
+        }
+        
+        .new-header .profile-dropdown a {
+            display: block;
+            padding: 12px 20px;
+            color: #8b5e3c;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .new-header .profile-dropdown a:hover {
+            background: #fef5ea;
+            color: #f5a623;
+        }
+        
+        .new-header .login-btn {
+            background: #f0e0d4;
+            color: #8b5e3c;
+            padding: 10px 20px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+        
+        .new-header .login-btn:hover {
+            background: #f5a623;
+            color: white;
+        }
+        
+        .new-header .burger-menu {
+            display: none;
+            font-size: 28px;
+            cursor: pointer;
+            color: #2d1810;
+        }
+        
+        /* ===== СЕКЦИЯ HERO: фон с затемнением (картинка salon-bg.webp) ===== */
+        .hero {
+            position: relative;
+            height: 600px;
+            display: flex;
+            align-items: center;
+            padding-left: 80px;
+            background: url('{{ url_for("static", filename="111.webp") }}') center center / cover no-repeat;
+            overflow: hidden;
+        }
+        
+        /* Легкое затемнение для читаемости текста (не трогаем стиль кнопки) */
+        .hero::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: rgba(45, 24, 16, 0.45);
+            z-index: 1;
+        }
+        
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            color: white;
+            max-width: 550px;
+        }
+        
+        .hero-content h1 {
+            font-size: 48px;
+            margin-bottom: 20px;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+        
+        .hero-content p {
+            font-size: 20px;
+            margin-bottom: 30px;
+            text-shadow: 0 1px 5px rgba(0,0,0,0.3);
+        }
+        
+        /* ГЛАВНАЯ КНОПКА — ТОЧНО ТАКОЙ ЖЕ ГРАДИЕНТ, КАК В ШАПКЕ */
+        .hero-content .btn-primary {
+            background: linear-gradient(135deg, #f5a623 0%, #ff6b6b 100%);
+            color: white;
+            padding: 14px 34px;
+            border-radius: 40px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 18px;
+            display: inline-block;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 8px 18px rgba(0,0,0,0.15);
+            letter-spacing: 0.5px;
+        }
+        
+        .hero-content .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 24px rgba(245, 166, 35, 0.4);
+            background: linear-gradient(135deg, #ff9f2c 0%, #ff7b5c 100%);
+        }
+        
+        /* ===== СЕКЦИЯ УСЛУГ ===== */
+        .services {
+            padding: 70px 40px;
+            text-align: center;
+            background-color: #fffcf8;
+        }
+        
+        .services h2 {
+            font-size: 36px;
+            margin-bottom: 45px;
+            color: #2d1810;
+            position: relative;
+            display: inline-block;
+        }
+        
+        .services h2:after {
+            content: '';
+            display: block;
+            width: 70px;
+            height: 3px;
+            background: linear-gradient(90deg, #f5a623, #ff6b6b);
+            margin: 12px auto 0;
+            border-radius: 4px;
+        }
+        
+        .service-cards {
+            display: flex;
+            justify-content: center;
+            gap: 35px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+        
+        .card {
+            background: white;
+            width: 260px;
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.08);
+            transition: 0.3s;
+            cursor: default;
+        }
+        
+        .card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 35px rgba(0,0,0,0.12);
+        }
+        
+        .card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            transition: transform 0.4s ease;
+        }
+        
+        .card:hover img {
+            transform: scale(1.02);
+        }
+        
+        .card h3 {
+            padding: 20px 15px;
+            font-size: 20px;
+            color: #3b2318;
+            font-weight: 600;
+        }
+        
+        /* ===== ФУТЕР С КАРТОЙ ===== */
+        .footer {
+            background: #2d1a10;
+            color: #f2e0cf;
+            padding: 40px 20px 30px;
+        }
+        
+        .footer-contacts h3 {
+            font-size: 24px;
+            margin-bottom: 18px;
+            color: #f5a623;
+        }
+        
+        .footer-contacts p {
+            margin: 8px 0;
+            font-size: 16px;
+        }
+        
+        .footer-contacts a {
+            color: #ffbc6e;
+            text-decoration: none;
+        }
+        
+        .map-container {
+            max-width: 1100px;
+            margin: 25px auto 0;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+        
+        /* ===== ОТЗЫВЫ ===== */
+        .reviews {
+            padding: 60px 30px;
+            background: #fef5ea;
+            text-align: center;
+        }
+        
+        .reviews h2 {
+            font-size: 34px;
+            color: #2d1810;
+            margin-bottom: 40px;
+        }
+        
+        .reviews-grid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 30px;
+            max-width: 1300px;
+            margin: 0 auto 40px;
+        }
+        
+        .review-card {
+            background: white;
+            padding: 25px;
+            width: 280px;
+            border-radius: 28px;
+            box-shadow: 0 12px 20px rgba(0,0,0,0.05);
+            transition: all 0.2s;
+            text-align: left;
+            border: 1px solid rgba(245,166,35,0.2);
+        }
+        
+        .review-card h3 {
+            color: #f5a623;
+            margin-bottom: 12px;
+            font-size: 20px;
+        }
+        
+        .review-card p {
+            margin: 8px 0;
+            color: #4a2e22;
+        }
+        
+        .all-reviews-btn {
+            display: inline-block;
+            background: transparent;
+            border: 2px solid #f5a623;
+            color: #8b5e3c;
+            padding: 12px 28px;
+            border-radius: 40px;
+            font-weight: bold;
+            text-decoration: none;
+            transition: 0.3s;
+        }
+        
+        .all-reviews-btn:hover {
+            background: #f5a623;
+            color: white;
+            transform: translateY(-2px);
+        }
+        
+        /* ===== АДАПТИВ ===== */
+        @media (max-width: 1024px) {
+            .new-header .container {
+                padding: 12px 20px;
+            }
+            .new-header .burger-menu {
+                display: block;
+            }
+            .new-header .nav-left,
+            .new-header .nav-right {
+                display: none;
+                width: 100%;
+                flex-direction: column;
+                padding: 20px 0;
+            }
+            .new-header .nav-left.active,
+            .new-header .nav-right.active {
+                display: flex;
+            }
+            .new-header .profile-menu {
+                width: 100%;
+            }
+            .new-header .profile-dropdown {
+                position: static;
+                margin-top: 10px;
+                box-shadow: none;
+            }
+            .hero {
+                padding-left: 30px;
+                padding-right: 30px;
+                height: 500px;
+            }
+            .hero-content h1 {
+                font-size: 36px;
+            }
+            .services {
+                padding: 50px 20px;
+            }
+        }
+        
+        @media (max-width: 680px) {
+            .hero {
+                text-align: center;
+                justify-content: center;
+                padding-left: 20px;
+                padding-right: 20px;
+            }
+            .hero-content {
+                max-width: 100%;
+            }
+            .hero-content h1 {
+                font-size: 30px;
+            }
+            .service-cards {
+                gap: 20px;
+            }
+            .reviews-grid {
+                gap: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- НОВАЯ ШАПКА -->
+<header class="new-header">
+    <div class="container">
+        <div class="logo-area">
+            <div class="logo-icon">
+                <i class="fas fa-scissors"></i>
+            </div>
+            <div class="logo-text">Парикмахерская <span>"Стиль"</span></div>
+        </div>
+        
+        <div class="burger-menu" onclick="toggleMenu()">
+            <i class="fas fa-bars"></i>
+        </div>
+        
+        <div class="nav-left" id="navLeft">
+            <a href="{{ url_for('index') }}">Главная</a>
+            <a href="{{ url_for('about') }}">О нас</a>
+            <a href="{{ url_for('services') }}">Услуги</a>
+        </div>
+        
+        <div class="nav-right" id="navRight">
+            <a href="/booking" class="btn-action">Записаться</a>
+            <a href="/review" class="btn-action">Отзыв</a>
+            
+            {% if session.username %}
+            <div class="profile-menu" id="profileMenu">
+                <div class="profile-circle">
+                    {{ session.username[0]|upper }}
+                </div>
+                <div class="profile-dropdown">
+                    <p><i class="fas fa-user"></i> {{ session.username }}</p>
+                    {% if is_admin %}
+                        <a href="/admin"><i class="fas fa-shield-alt"></i> Панель администратора</a>
+                        <a href="/schedule"><i class="fas fa-calendar-alt"></i> Расписание</a>
+                    {% else %}
+                        <a href="/my_bookings"><i class="fas fa-bookmark"></i> Мои записи</a>
+                        <a href="/schedule"><i class="fas fa-calendar-alt"></i> Расписание</a>
+                    {% endif %}
+                    <a href="/logout"><i class="fas fa-sign-out-alt"></i> Выйти</a>
+                </div>
+            </div>
+            {% else %}
+            <a href="{{ url_for('login') }}" class="login-btn">Войти</a>
+            {% endif %}
+        </div>
+    </div>
+</header>
+
+<!-- СЕКЦИЯ HERO: кнопка "Записаться" теперь имеет точно такой же градиент, как в шапке -->
+<section class="hero">
+    <div class="hero-content">
+        <h1>Ваша красота — наша забота</h1>
+        <p>Профессиональные услуги по уходу за волосами</p>
+        <a href="/booking" class="btn-primary">Записаться</a>
+    </div>
+</section>
+
+<!-- Услуги (картинки остались как у вас) -->
+<section class="services">
+    <h2>Наши услуги</h2>
+    <div class="service-cards">
+        <div class="card">
+            <img src="{{ url_for('static', filename='1.jpg') }}" alt="Женские стрижки">
+            <h3>Женские стрижки</h3>
+        </div>
+        <div class="card">
+            <img src="{{ url_for('static', filename='2.webp') }}" alt="Мужские стрижки">
+            <h3>Мужские стрижки</h3>
+        </div>
+        <div class="card">
+            <img src="{{ url_for('static', filename='3.webp') }}" alt="Окрашивание">
+            <h3>Окрашивание</h3>
+        </div>
+        <div class="card">
+            <img src="{{ url_for('static', filename='4.webp') }}" alt="Маникюр">
+            <h3>Маникюр</h3>
+        </div>
+    </div>
+</section>
+
+<!-- ФУТЕР (контакты + карта) -->
+<footer class="footer">
+    <div class="footer-contacts" style="text-align:center;">
+        <h3>Общая информация</h3>
+        <p>📞 Телефон: <a href="tel:2606905">260-69-05</a></p>
+        <p>📍 Адрес: г. Новосибирск, ул. Бориса Богаткова 194/2</p>
+        <p>Режим работы: 9-20 без выходных</p>
+    </div>
+    <div class="map-container">
+        <iframe src="https://yandex.ru/map-widget/v1/?ll=82.971086,55.031680&z=17&pt=82.971086,55.031680,pm2rdm" width="100%" height="350" style="border:0; border-radius:12px;" allowfullscreen="true" loading="lazy"></iframe>
+    </div>
+</footer>
+
+<!-- ОТЗЫВЫ: показываем все отзывы, переданные из шаблона (reviews) -->
+<section class="reviews">
+    <h2>Отзывы клиентов</h2>
+    <div class="reviews-grid">
+        {% for r in reviews %}
+        <div class="review-card">
+            <h3>{{ r[0] }}</h3>
+            <p>⭐ {{ r[1] }}/5</p>
+            <p>{{ r[2] }}</p>
+            <p>{{ r[3] }}</p>
+        </div>
+        {% endfor %}
+    </div>
+    <a href="/reviews" class="all-reviews-btn">Посмотреть все отзывы</a>
+</section>
+
+<script>
+function toggleMenu() {
+    const navLeft = document.getElementById('navLeft');
+    const navRight = document.getElementById('navRight');
+    if (navLeft) navLeft.classList.toggle('active');
+    if (navRight) navRight.classList.toggle('active');
+}
+
+document.addEventListener("DOMContentLoaded", function() {
+    const profileMenu = document.getElementById('profileMenu');
+    if (profileMenu) {
+        profileMenu.addEventListener("click", function(e) {
+            e.stopPropagation();
+            profileMenu.classList.toggle("active");
+        });
+        
+        document.addEventListener("click", function() {
+            if (profileMenu) profileMenu.classList.remove("active");
+        });
+    }
+});
+</script>
+
+</body>
+</html>

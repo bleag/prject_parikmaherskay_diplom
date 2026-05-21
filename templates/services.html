@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Услуги</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+<header>
+<div class="logo">Парикмахерская</div>
+
+<nav>
+<a href="{{ url_for('index') }}">Главная</a>
+<a href="#women">Женский зал</a>
+<a href="#men">Мужской зал</a>
+<a href="#nails">Маникюр</a>
+</nav>
+</header>
+
+
+<section class="services-page">
+
+
+
+<!-- ЖЕНСКИЙ ЗАЛ -->
+
+<div class="service-block" id="women">
+
+<h2>Женский зал</h2>
+
+<ul class="price-list">
+
+<li>Модельная стрижка (короткая) <span>700 руб.</span></li>
+<li>Модельная стрижка (средняя) <span>800 руб.</span></li>
+<li>Модельная стрижка (длинная) <span>от 900 руб.</span></li>
+<li>Химическая завивка <span>от 1100 руб.</span></li>
+<li>Долговременная укладка <span>от 1200 руб.</span></li>
+<li>Вечерняя причёска <span>1000-2000 руб.</span></li>
+<li>Укладка феном (короткие) <span>600 руб.</span></li>
+<li>Укладка феном (средние) <span>700 руб.</span></li>
+<li>Укладка феном (длинные) <span>от 800 руб.</span></li>
+<li>Стрижка чёлки <span>200 руб.</span></li>
+<li>Мытьё головы <span>от 100 руб.</span></li>
+<li>Комплексное лечение волос <span>от 600 руб.</span></li>
+<li>Мелирование волос <span>от 1200 руб.</span></li>
+<li>Покраска волос <span>от 800 руб.</span></li>
+
+</ul>
+
+</div>
+
+
+<!-- МУЖСКОЙ ЗАЛ -->
+
+<div class="service-block" id="men">
+
+<h2>Мужской зал</h2>
+
+<ul class="price-list">
+
+<li>Модельная стрижка <span>600 руб.</span></li>
+<li>Спортивная стрижка <span>500 руб.</span></li>
+<li>Наголо <span>200 руб.</span></li>
+<li>Окантовка <span>300 руб.</span></li>
+<li>Мытьё головы <span>100 руб.</span></li>
+
+</ul>
+
+</div>
+
+
+<!-- МАНИКЮР -->
+
+<div class="service-block" id="nails">
+
+<h2>Маникюрный зал</h2>
+
+<ul class="price-list">
+
+<li>Гигиенический маникюр <span>400 руб.</span></li>
+<li>Мужской маникюр <span>500 руб.</span></li>
+<li>Покрытие лаком <span>от 100 руб.</span></li>
+<li>Покрытие гель-лаком <span>от 1000 руб.</span></li>
+<li>Снятие гель-лака <span>200 руб.</span></li>
+<li>Покраска бровей / ресниц <span>от 200 руб.</span></li>
+<li>Оформление бровей <span>от 200 руб.</span></li>
+
+</ul>
+
+</div>
+
+
+</section>
+
+
+<footer>
+<p>Телефон: 260-69-05</p>
+</footer>
+
+</body>
+</html>

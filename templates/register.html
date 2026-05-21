@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Регистрация | StyleParic</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body class="auth-page">
+<div class="auth-overlay"></div>
+
+<div class="auth-container">
+    <div class="auth-card">
+        <!-- Кнопка назад -->
+        <a href="/" class="back-home">
+            <i class="fas fa-arrow-left"></i>
+            <span>На главную</span>
+        </a>
+
+        <div class="auth-header">
+            <div class="logo-icon">
+                <i class="fas fa-spa"></i>
+            </div>
+            <h1 class="auth-title">Создать аккаунт</h1>
+            <p class="auth-subtitle">Присоединяйтесь к StyleParic</p>
+        </div>
+
+        <form method="POST" class="auth-form" id="registerForm" onsubmit="return validatePassword()">
+            <div class="input-group">
+                <i class="fas fa-user input-icon"></i>
+                <input type="text" name="username" placeholder="Придумайте логин" required autocomplete="username" id="username">
+            </div>
+
+            <div class="input-group">
+                <i class="fas fa-lock input-icon"></i>
+                <input type="password" name="password" placeholder="Придумайте пароль" required autocomplete="new-password" id="password">
+                <i class="fas fa-eye-slash toggle-password" onclick="togglePassword()"></i>
+            </div>
+
+            <div class="password-requirements" id="passwordRequirements">
+                <div class="requirement" id="lengthReq">
+                    <i class="fas fa-circle"></i>
+                    <span>Минимум 6 символов</span>
+                </div>
+                <div class="requirement" id="letterReq">
+                    <i class="fas fa-circle"></i>
+                    <span>Хотя бы одна буква</span>
+                </div>
+                <div class="requirement" id="numberReq">
+                    <i class="fas fa-circle"></i>
+                    <span>Хотя бы одна цифра</span>
+                </div>
+            </div>
+
+            <button type="submit" class="auth-btn">
+                <span>Зарегистрироваться</span>
+                <i class="fas fa-user-plus"></i>
+            </button>
+        </form>
+
+        {% if error %}
+        <div class="error-message">
+            <i class="fas fa-exclamation-circle"></i>
+            <span>{{ error }}</span>
+        </div>
+        {% endif %}
+
+        <div class="auth-footer">
+            <p>Уже есть аккаунт? <a href="/login">Войти</a></p>
+        </div>
+    </div>
+</div>
+
+<script>
+function togglePassword() {
+    const passwordInput = document.getElementById('password');
+    const toggleIcon = document.querySelector('.toggle-password');
+    if (passwordInput.type === 'password') {
+        passwordInput.type = 'text';
+        toggleIcon.classList.remove('fa-eye-slash');
+        toggleIcon.classList.add('fa-eye');
+    } else {
+        passwordInput.type = 'password';
+        toggleIcon.classList.remove('fa-eye');
+        toggleIcon.classList.add('fa-eye-slash');
+    }
+}
+
+// Валидация пароля в реальном времени
+const passwordInput = document.getElementById('password');
+const lengthReq = document.getElementById('lengthReq');
+const letterReq = document.getElementById('letterReq');
+const numberReq = document.getElementById('numberReq');
+
+passwordInput.addEventListener('input', function() {
+    const password = this.value;
+    
+    if (password.length >= 6) {
+        lengthReq.classList.add('valid');
+        lengthReq.querySelector('i').className = 'fas fa-check-circle';
+    } else {
+        lengthReq.classList.remove('valid');
+        lengthReq.querySelector('i').className = 'fas fa-circle';
+    }
+    
+    if (/[a-zA-Zа-яА-Я]/.test(password)) {
+        letterReq.classList.add('valid');
+        letterReq.querySelector('i').className = 'fas fa-check-circle';
+    } else {
+        letterReq.classList.remove('valid');
+        letterReq.querySelector('i').className = 'fas fa-circle';
+    }
+    
+    if (/[0-9]/.test(password)) {
+        numberReq.classList.add('valid');
+        numberReq.querySelector('i').className = 'fas fa-check-circle';
+    } else {
+        numberReq.classList.remove('valid');
+        numberReq.querySelector('i').className = 'fas fa-circle';
+    }
+});
+
+function validatePassword() {
+    const password = passwordInput.value;
+    let errorMessage = '';
+    
+    if (password.length < 6) {
+        errorMessage = 'Пароль должен содержать минимум 6 символов';
+    } else if (!/[a-zA-Zа-яА-Я]/.test(password)) {
+        errorMessage = 'Пароль должен содержать хотя бы одну букву';
+    } else if (!/[0-9]/.test(password)) {
+        errorMessage = 'Пароль должен содержать хотя бы одну цифру';
+    }
+    
+    if (errorMessage) {
+        let errorDiv = document.querySelector('.error-message');
+        if (!errorDiv) {
+            errorDiv = document.createElement('div');
+            errorDiv.className = 'error-message';
+            const form = document.querySelector('.auth-form');
+            form.insertBefore(errorDiv, form.querySelector('.auth-btn'));
+        }
+        errorDiv.innerHTML = `<i class="fas fa-exclamation-circle"></i><span>${errorMessage}</span>`;
+        errorDiv.style.display = 'flex';
+        
+        setTimeout(() => {
+            errorDiv.style.display = 'none';
+        }, 3000);
+        
+        return false;
+    }
+    
+    return true;
+}
+</script>
+</body>
+</html>

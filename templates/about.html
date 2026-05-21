@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>О нас | StyleParic</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Дополнительные стили поверх твоих */
+        .about-container {
+            background: rgba(255, 255, 255, 0.94);
+            backdrop-filter: blur(2px);
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 50px;
+            border-radius: 24px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(245, 166, 35, 0.2);
+        }
+        
+        .about-container h1 {
+            font-size: 32px;
+            color: #2d1810;
+            margin-bottom: 30px;
+            text-align: center;
+            font-weight: 700;
+        }
+        
+        .about-container h1 i {
+            color: #f5a623;
+            margin-right: 12px;
+        }
+        
+        .about-container p {
+            font-size: 16px;
+            line-height: 1.7;
+            color: #4a3728;
+            margin-bottom: 20px;
+        }
+        
+        .about-container h2 {
+            font-size: 22px;
+            color: #2d1810;
+            margin: 30px 0 20px;
+            font-weight: 600;
+        }
+        
+        .about-container ul {
+            list-style: none;
+            padding: 0;
+            margin: 20px 0 0;
+        }
+        
+        .about-container ul li {
+            padding: 12px 0;
+            font-size: 16px;
+            color: #4a3728;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        
+        .about-container ul li:last-child {
+            border-bottom: none;
+        }
+        
+        .about-container ul li i {
+            color: #f5a623;
+            width: 24px;
+            font-size: 18px;
+        }
+        
+        @media (max-width: 640px) {
+            .about-container {
+                padding: 30px 20px;
+            }
+            
+            .about-container h1 {
+                font-size: 26px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="logo">Парикмахерская "Стиль"</div>
+    <nav>
+        <a href="{{ url_for('index') }}">Главная</a>
+        <a href="{{ url_for('about') }}" style="color:#f5a623;">О нас</a>
+        <a href="{{ url_for('services') }}">Услуги</a>
+        <a href="{{ url_for('login') }}">Войти</a>
+        <a href="{{ url_for('booking') }}" class="btn-primary">Записаться</a>
+    </nav>
+</header>
+
+<section class="about-section">
+    <div class="about-container">
+        <h1><i class="fas fa-scissors"></i> О парикмахерской «Стиль»</h1>
+
+        <p>
+            Парикмахерская «Стиль» — современный салон красоты,
+            ориентированный на качественное обслуживание мужчин и женщин.
+            Основной целью работы является создание индивидуального образа
+            для каждого клиента с учетом его предпочтений и современных тенденций.
+        </p>
+
+        <p>
+            В салоне работают три профессиональных парикмахера
+            и администратор, который также оказывает услуги маникюра.
+            Благодаря небольшому, но слаженному коллективу обеспечивается
+            высокий уровень сервиса и индивидуальный подход.
+        </p>
+
+        <h2><i class="fas fa-cut"></i> Наши направления</h2>
+        <ul>
+            <li><i class="fas fa-female"></i> Женские и мужские стрижки</li>
+            <li><i class="fas fa-palette"></i> Окрашивание волос</li>
+            <li><i class="fas fa-smile"></i> Укладки и вечерние прически</li>
+            <li><i class="fas fa-hand-sparkles"></i> Маникюр и уход за ногтями</li>
+        </ul>
+    </div>
+</section>
+
+<footer>
+    <p>© 2026 Парикмахерская «Стиль»</p>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>Запись | StyleParic</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<header>
+    <div class="logo">Парикмахерская</div>
+</header>
+
+<main class="booking-page">
+    <!-- ФОН -->
+    <div class="booking-bg"></div>
+    
+    <div class="booking-container">
+        <h2>Онлайн запись</h2>
+
+        <form method="POST" id="booking-form">
+            <input type="text" name="name" placeholder="Ваше имя" required
+                   value="{{ name if name else request.form.name if request.method=='POST' else '' }}">
+
+            <input type="tel" name="phone" placeholder="Телефон" required
+                   value="{{ phone if phone else request.form.phone if request.method=='POST' else '' }}">
+
+            <select name="service">
+                {% set services = ["Женская стрижка","Мужская стрижка","Окрашивание","Маникюр","Педикюр","Укладка","Лечение волос"] %}
+                {% for s in services %}
+                    <option value="{{ s }}" {% if (service==s) or (request.form.service==s) %}selected{% endif %}>{{ s }}</option>
+                {% endfor %}
+            </select>
+
+            <input type="date" name="date" id="date-input" required
+                   value="{{ selected_date if selected_date else request.form.date if request.method=='POST' else '' }}">
+                   
+            <select name="master" id="master-select" required>
+                <option value="">Выбрать мастера</option>
+            </select>
+
+            <select name="time" id="time-select" required>
+                <option value="">Выберите время</option>
+            </select>
+
+            <button type="submit">Записаться</button>
+        </form>
+
+        <a href="/">На главную</a>
+
+        {% if error %}
+        <p class="error">{{ error }}</p>
+        {% endif %}
+    </div>
+</main>
+
+<style>
+.booking-page {
+    position: relative;
+    min-height: 100vh;
+}
+
+.booking-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: url('/static/pp.jpg');
+    background-size: cover;
+    background-position: center;
+    z-index: 0;
+}
+
+.booking-container {
+    position: relative;
+    z-index: 1;
+    max-width: 500px;
+    margin: 50px auto;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 30px;
+    border-radius: 20px;
+}
+
+.booking-container input,
+.booking-container select {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    box-sizing: border-box;
+}
+
+.booking-container button {
+    width: 100%;
+    padding: 12px;
+    background: #f5a623;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+.booking-container a {
+    display: block;
+    text-align: center;
+    margin-top: 15px;
+}
+</style>
+
+<script>
+const dateInput = document.getElementById('date-input');
+const timeSelect = document.getElementById('time-select');
+const masterSelect = document.getElementById('master-select');
+
+const times = ["09:00","09:30","10:00","10:30","11:00","11:30",
+               "12:00","12:30","13:00","13:30","14:00","14:30",
+               "15:00","15:30","16:00","16:30","17:00","17:30",
+               "18:00","18:30","19:00","19:30","20:00"];
+
+dateInput.addEventListener('change', function() {
+    const date = this.value;
+    if (!date) return;
+    
+    fetch(`/get_available?date=${date}`)
+        .then(response => response.json())
+        .then(data => {
+            timeSelect.innerHTML = '<option value="">Выберите время</option>';
+            times.forEach(t => {
+                if (!data.busy.includes(t)) {
+                    const option = document.createElement('option');
+                    option.value = t;
+                    option.textContent = t;
+                    timeSelect.appendChild(option);
+                }
+            });
+
+            masterSelect.innerHTML = '<option value="">Выбрать мастера</option>';
+            if (data.masters && data.masters.length > 0) {
+                data.masters.forEach(m => {
+                    const option = document.createElement('option');
+                    option.value = m;
+                    option.textContent = m;
+                    masterSelect.appendChild(option);
+                });
+            }
+        });
+});
+</script>
+
+</body>
+</html>

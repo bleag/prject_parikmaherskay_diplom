@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Админ панель | StyleParic</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body.admin-page {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #fefaf5 0%, #fff5f0 100%);
+            min-height: 100vh;
+        }
+        
+        /* Шапка */
+        .admin-page .admin-header {
+            background: white;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+            border-bottom: 1px solid rgba(245, 166, 35, 0.2);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        
+        .admin-page .admin-header h1 {
+            font-size: 24px;
+            color: #2d1810;
+            font-weight: 700;
+        }
+        
+        .admin-page .admin-header h1 i {
+            color: #f5a623;
+            margin-right: 10px;
+        }
+        
+        .admin-page .admin-header > a {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: #f0e0d4;
+            color: #8b5e3c;
+            text-decoration: none;
+            border-radius: 10px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .admin-page .admin-header > a:hover {
+            background: #f5a623;
+            color: white;
+        }
+        
+        /* Уведомления */
+        .admin-page .notification-box {
+            background: white;
+            padding: 8px 16px;
+            border-radius: 30px;
+            font-size: 14px;
+            font-weight: 600;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .admin-page .notification-box i {
+            color: #f5a623;
+        }
+        
+        .admin-page #new-count {
+            font-weight: 700;
+            font-size: 18px;
+        }
+        
+        /* Поиск */
+        .admin-page .admin-search {
+            display: flex;
+            align-items: center;
+        }
+        
+        .admin-page .search-form {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .admin-page .search-form input {
+            padding: 10px 14px;
+            border: 2px solid #f0e0d4;
+            border-radius: 10px;
+            font-size: 14px;
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .admin-page .search-form input:focus {
+            outline: none;
+            border-color: #f5a623;
+        }
+        
+        .admin-page .search-form button,
+        .admin-page .reset-btn {
+            padding: 10px 18px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .admin-page .search-form button {
+            background: #f5a623;
+            color: white;
+        }
+        
+        .admin-page .search-form button:hover {
+            background: #e0950f;
+        }
+        
+        .admin-page .reset-btn {
+            background: #f0e0d4;
+            color: #8b5e3c;
+        }
+        
+        .admin-page .reset-btn:hover {
+            background: #dc2626;
+            color: white;
+        }
+        
+        /* Кнопка создания */
+        .admin-page .admin-create-btn {
+            margin-left: auto;
+        }
+        
+        .admin-page .create-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #f5a623 0%, #ff6b6b 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 10px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .admin-page .create-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(245, 166, 35, 0.3);
+        }
+        
+        /* Карточки записей */
+        .admin-page .admin-bookings {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 25px;
+            padding: 40px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .admin-page .admin-card {
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            border: 1px solid rgba(245, 166, 35, 0.1);
+        }
+        
+        .admin-page .admin-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
+        }
+        
+        .admin-page .admin-card p {
+            margin: 12px 0;
+            color: #4a3728;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .admin-page .admin-card p b {
+            color: #2d1810;
+            min-width: 70px;
+        }
+        
+        .admin-page .admin-card p i {
+            color: #f5a623;
+            width: 20px;
+        }
+        
+        .admin-page .status {
+            display: inline-block;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin: 10px 0;
+        }
+        
+        .admin-page .status.Ожидает {
+            background: #fff3e0;
+            color: #f5a623;
+        }
+        
+        .admin-page .status.Подтверждена {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+        
+        .admin-page .status.Завершена {
+            background: #e3f2fd;
+            color: #1565c0;
+        }
+        
+        .admin-page .confirm-btn,
+        .admin-page .complete-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+            margin-right: 10px;
+        }
+        
+        .admin-page .confirm-btn {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+        
+        .admin-page .confirm-btn:hover {
+            background: #2e7d32;
+            color: white;
+        }
+        
+        .admin-page .complete-btn {
+            background: #e3f2fd;
+            color: #1565c0;
+        }
+        
+        .admin-page .complete-btn:hover {
+            background: #1565c0;
+            color: white;
+        }
+        
+        .admin-page .no-bookings {
+            text-align: center;
+            padding: 80px;
+            background: white;
+            border-radius: 20px;
+            grid-column: 1 / -1;
+        }
+        
+        .admin-page .no-bookings i {
+            font-size: 64px;
+            color: #f0e0d4;
+            margin-bottom: 20px;
+        }
+        
+        /* Адаптив */
+        @media (max-width: 768px) {
+            .admin-page .admin-header {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .admin-page .admin-bookings {
+                padding: 20px;
+                grid-template-columns: 1fr;
+            }
+            
+            .admin-page .search-form {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body class="admin-page">
+
+<header>
+    <div class="admin-header">
+        <h1><i class="fas fa-shield-alt"></i> Админ панель</h1>
+        
+        <div class="notification-box">
+            <i class="fas fa-bell"></i> Новые записи: <span id="new-count">0</span>
+        </div>
+        
+        <a href="{{ url_for('index') }}">
+            <i class="fas fa-home"></i> Главная
+        </a>
+
+        <div class="admin-search">
+            <form method="GET" class="search-form">
+                <input type="text" name="search" placeholder="Поиск по имени или телефону" value="{{ request.args.get('search', '') }}">
+                <input type="date" name="date" value="{{ request.args.get('date', '') }}">
+                <button type="submit"><i class="fas fa-search"></i> Найти</button>
+                <a href="{{ url_for('admin') }}" class="reset-btn"><i class="fas fa-times"></i> Сбросить</a>
+            </form>
+        </div>
+
+        <div class="admin-create-btn">
+            <a href="{{ url_for('admin_create') }}" class="create-btn">
+                <i class="fas fa-plus"></i> Создать запись
+            </a>
+        </div>
+    </div>
+</header>
+
+<main class="admin-bookings">
+    {% for b in bookings %}
+    <div class="admin-card">
+        <p><i class="fas fa-user"></i> <b>Клиент:</b> {{ b[1] }}</p>
+        <p><i class="fas fa-phone"></i> <b>Телефон:</b> {{ b[2] }}</p>
+        <p><i class="fas fa-cut"></i> <b>Услуга:</b> {{ b[3] }}</p>
+        <p><i class="fas fa-calendar-alt"></i> <b>Дата:</b> {{ b[4] }}</p>
+        <p><i class="fas fa-clock"></i> <b>Время:</b> {{ b[5] }}</p>
+        <p><i class="fas fa-user-tie"></i> <b>Мастер:</b> {{ b[7] }}</p>
+        <p class="status {{ b[6] }}">{{ b[6] }}</p>
+
+        {% if b[6] == "Ожидает" %}
+            <a href="/confirm/{{ b[0] }}" class="confirm-btn">
+                <i class="fas fa-check-circle"></i> Подтвердить
+            </a>
+        {% endif %}
+        {% if b[6] == "Подтверждена" %}
+            <a href="/complete/{{ b[0] }}" class="complete-btn">
+                <i class="fas fa-check-double"></i> Завершить
+            </a>
+        {% endif %}
+    </div>
+    {% else %}
+    <div class="no-bookings">
+        <i class="fas fa-calendar-times"></i>
+        <p>Записей не найдено</p>
+    </div>
+    {% endfor %}
+</main>
+
+<script>
+function checkNotifications() {
+    fetch("/admin_notifications")
+        .then(response => response.json())
+        .then(data => {
+            const counter = document.getElementById("new-count");
+            counter.textContent = data.count;
+            if (data.count > 0) {
+                counter.style.color = "#dc2626";
+                counter.style.fontWeight = "bold";
+            } else {
+                counter.style.color = "#2e7d32";
+            }
+        });
+}
+
+setInterval(checkNotifications, 5000);
+checkNotifications();
+</script>
+
+</body>
+</html>

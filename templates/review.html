@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Оставить отзыв | StyleParic</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<header style="padding: 15px 20px; background: white; border-bottom: 1px solid #f0e0d4;">
+    <a href="{{ url_for('index') }}" style="color: #f5a623; text-decoration: none; font-weight: 500;">
+        ← На главную
+    </a>
+</header>
+
+<main class="review-page">
+    <div class="review-bg"></div>
+    
+    <div class="review-wrapper">
+        <div class="review-header">
+            <div class="review-icon">★★★★★</div>
+            <h1 class="review-title">Оставьте свой отзыв</h1>
+            <p class="review-subtitle">Нам важно ваше мнение</p>
+        </div>
+
+        {% if error %}
+        <div class="error-message">{{ error }}</div>
+        {% endif %}
+
+        <form method="POST" class="review-form">
+            <div class="form-group">
+                <label>Ваше имя</label>
+                <input type="text" name="username" placeholder="Введите ваше имя" required>
+            </div>
+
+            <div class="form-group">
+                <label>Оценка</label>
+                <select name="rating" required>
+                    <option value="" disabled selected>Выберите оценку</option>
+                    <option value="5">⭐ 5 — Отлично</option>
+                    <option value="4">⭐ 4 — Хорошо</option>
+                    <option value="3">⭐ 3 — Удовлетворительно</option>
+                    <option value="2">⭐ 2 — Плохо</option>
+                    <option value="1">⭐ 1 — Ужасно</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Комментарий</label>
+                <textarea name="comment" rows="5" placeholder="Расскажите о вашем опыте..." required></textarea>
+            </div>
+
+            <button type="submit" class="btn-submit">Отправить отзыв</button>
+        </form>
+    </div>
+</main>
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.review-page {
+    position: relative;
+    min-height: calc(100vh - 60px);
+    overflow: hidden;
+}
+
+.review-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: url('/static/pp.jpg');
+    background-size: cover;
+    background-position: center;
+    z-index: 0;
+}
+
+.review-wrapper {
+    position: relative;
+    z-index: 1;
+    max-width: 550px;
+    margin: 40px auto;
+    background: rgba(255, 255, 255, 0.94);
+    border-radius: 24px;
+    padding: 40px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+}
+
+.review-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.review-icon {
+    font-size: 28px;
+    color: #f5a623;
+    margin-bottom: 12px;
+    letter-spacing: 4px;
+}
+
+.review-title {
+    font-size: 26px;
+    color: #2d1810;
+    margin-bottom: 6px;
+}
+
+.review-subtitle {
+    color: #8b5e3c;
+    font-size: 14px;
+}
+
+.review-form {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.form-group label {
+    font-weight: 600;
+    color: #2d1810;
+    font-size: 14px;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    padding: 12px 14px;
+    border: 2px solid #f0e0d4;
+    border-radius: 12px;
+    font-size: 15px;
+    font-family: inherit;
+    background: white;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: #f5a623;
+}
+
+.form-group textarea {
+    resize: vertical;
+}
+
+.btn-submit {
+    background: #f5a623;
+    color: white;
+    border: none;
+    padding: 14px;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+.btn-submit:hover {
+    background: #e0950f;
+}
+
+.error-message {
+    background: #fee2e2;
+    color: #dc2626;
+    padding: 12px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+</style>
+
+</body>
+</html>

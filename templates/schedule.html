@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>Расписание мастеров | StyleParic</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+    
+    body {
+        font-family: 'Inter', sans-serif;
+        background: linear-gradient(135deg, #fefaf5 0%, #fff5f0 100%);
+    }
+    
+    .schedule-wrapper {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 40px 20px;
+    }
+    
+    .schedule-header {
+        text-align: center;
+        margin-bottom: 40px;
+    }
+    
+    .schedule-icon {
+        width: 70px;
+        height: 70px;
+        background: linear-gradient(135deg, #f5a623 0%, #ff6b6b 100%);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 20px;
+    }
+    
+    .schedule-icon i {
+        font-size: 32px;
+        color: white;
+    }
+    
+    .schedule-header h1 {
+        font-size: 32px;
+        color: #2d1810;
+        margin-bottom: 8px;
+        font-weight: 700;
+    }
+    
+    .schedule-header p {
+        color: #8b5e3c;
+        font-size: 16px;
+    }
+    
+    .admin-note {
+        background: #fff3e0;
+        border-left: 4px solid #f5a623;
+        padding: 12px 20px;
+        border-radius: 10px;
+        margin-bottom: 30px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-size: 14px;
+        color: #8b5e3c;
+    }
+    
+    .admin-note i {
+        color: #f5a623;
+        font-size: 18px;
+    }
+    
+    .schedule-table-container {
+        overflow-x: auto;
+        border-radius: 20px;
+        background: white;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+        border: 1px solid rgba(245, 166, 35, 0.1);
+    }
+    
+    .schedule-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 14px;
+    }
+    
+    .schedule-table th {
+        background: linear-gradient(135deg, #f5a623 0%, #ff6b6b 100%);
+        color: white;
+        padding: 16px 12px;
+        font-weight: 600;
+        font-size: 15px;
+        border: none;
+    }
+    
+    .schedule-table th:first-child {
+        border-radius: 20px 0 0 0;
+    }
+    
+    .schedule-table th:last-child {
+        border-radius: 0 20px 0 0;
+    }
+    
+    .schedule-table td {
+        padding: 14px 12px;
+        text-align: center;
+        border-bottom: 1px solid #f0e0d4;
+        color: #4a3728;
+    }
+    
+    .schedule-table tr:hover td {
+        background: #fffaf5;
+    }
+    
+    .date-cell {
+        font-weight: 600;
+        background: #fefaf5;
+        color: #2d1810;
+        border-right: 1px solid #f0e0d4;
+    }
+    
+    .editable-cell {
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-weight: 500;
+    }
+    
+    .editable-cell:hover {
+        background: #fff3e0 !important;
+        transform: scale(1.02);
+    }
+    
+    .status-working {
+        background: #e8f5e9;
+        color: #2e7d32;
+        display: inline-block;
+        padding: 6px 16px;
+        border-radius: 20px;
+        font-size: 13px;
+        font-weight: 600;
+    }
+    
+    .status-not-working {
+        background: #fee2e2;
+        color: #dc2626;
+        display: inline-block;
+        padding: 6px 16px;
+        border-radius: 20px;
+        font-size: 13px;
+        font-weight: 600;
+    }
+    
+    .back-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin-top: 30px;
+        padding: 12px 24px;
+        background: white;
+        color: #8b5e3c;
+        text-decoration: none;
+        border-radius: 12px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        border: 1px solid rgba(245, 166, 35, 0.2);
+    }
+    
+    .back-btn:hover {
+        background: #f5a623;
+        color: white;
+        transform: translateX(-5px);
+    }
+    
+    @media (max-width: 768px) {
+        .schedule-wrapper {
+            padding: 20px;
+        }
+        
+        .schedule-header h1 {
+            font-size: 24px;
+        }
+        
+        .schedule-table th,
+        .schedule-table td {
+            padding: 10px 6px;
+            font-size: 12px;
+        }
+        
+        .status-working,
+        .status-not-working {
+            padding: 4px 10px;
+            font-size: 11px;
+        }
+    }
+</style>
+</head>
+<body data-is-admin="{{ session.get('role') == 1 }}">
+
+<div class="schedule-wrapper">
+    <div class="schedule-header">
+        <div class="schedule-icon">
+            <i class="fas fa-calendar-alt"></i>
+        </div>
+        <h1>Расписание мастеров</h1>
+        <p>График работы наших специалистов</p>
+    </div>
+    
+    {% if session.get('role') == 1 %}
+    <div class="admin-note">
+        <i class="fas fa-info-circle"></i>
+        <span>Вы вошли как администратор. Нажмите на ячейку с мастером, чтобы изменить статус (Работает / Не работает)</span>
+    </div>
+    {% endif %}
+    
+    <div class="schedule-table-container">
+        <table class="schedule-table">
+            <thead>
+                <tr>
+                    <th><i class="fas fa-calendar-day"></i> Дата</th>
+                    {% for master in masters %}
+                        <th><i class="fas fa-user-tie"></i> {{ master }}</th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for date in dates %}
+                <tr>
+                    <td class="date-cell">{{ date.strftime('%d %B %Y') }}</td>
+                    {% for master in masters %}
+                    {% set status = schedule_data[date][master] %}
+                    <td class="editable-cell {% if session.get('role') == 1 %}editable{% endif %}"
+                        data-date="{{ date }}"
+                        data-master="{{ master }}">
+                        {% if status == "Работает" %}
+                            <span class="status-working"><i class="fas fa-check-circle"></i> Работает</span>
+                        {% else %}
+                            <span class="status-not-working"><i class="fas fa-times-circle"></i> Не работает</span>
+                        {% endif %}
+                    </td>
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    <a href="/" class="back-btn">
+        <i class="fas fa-arrow-left"></i> На главную
+    </a>
+</div>
+
+<script>
+const body = document.body;
+const isAdmin = body.dataset.isAdmin === "1" || body.dataset.isAdmin === "True";
+
+document.querySelectorAll('.editable-cell').forEach(td => {
+    td.addEventListener('click', function() {
+        if (!isAdmin) return;
+        
+        const currentSpan = this.querySelector('span');
+        const currentText = currentSpan.innerText.trim();
+        const isWorking = currentText === "Работает";
+        const newStatus = isWorking ? "Не работает" : "Работает";
+        
+        // Обновляем отображение
+        if (newStatus === "Работает") {
+            currentSpan.innerHTML = '<i class="fas fa-check-circle"></i> Работает';
+            currentSpan.className = 'status-working';
+        } else {
+            currentSpan.innerHTML = '<i class="fas fa-times-circle"></i> Не работает';
+            currentSpan.className = 'status-not-working';
+        }
+        
+        // Отправляем на сервер
+        fetch("/update_schedule", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                date: this.dataset.date,
+                master: this.dataset.master,
+                note: newStatus
+            })
+        }).then(res => res.json())
+          .then(data => console.log(data))
+          .catch(err => console.error('Ошибка:', err));
+    });
+});
+</script>
+
+</body>
+</html>

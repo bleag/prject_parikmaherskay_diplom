@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>Мои записи | StyleParic</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+<header>
+    <div class="logo">Парикмахерская</div>
+</header>
+
+<section class="my-bookings-new">
+    <div class="bookings-header">
+        <h1><i class="fas fa-calendar-alt"></i> Мои записи</h1>
+        <p class="bookings-subtitle">Ваши ближайшие визиты в салон</p>
+    </div>
+
+    <div class="booking-grid-new">
+        {% for b in bookings %}
+        <div class="booking-card-new">
+            <div class="card-header">
+                <div class="service-icon">
+                    <i class="fas fa-cut"></i>
+                </div>
+                <h3>{{ b[1] }}</h3>
+            </div>
+            
+            <div class="card-details">
+                <div class="detail-item">
+                    <i class="fas fa-calendar-day"></i>
+                    <span>{{ b[2] }}</span>
+                </div>
+                <div class="detail-item">
+                    <i class="fas fa-clock"></i>
+                    <span>{{ b[3] }}</span>
+                </div>
+                <div class="detail-item">
+                    <i class="fas fa-user-tie"></i>
+                    <span>Мастер: {{ b[5] }}</span>
+                </div>
+            </div>
+
+            <!-- Только Подтверждена или Завершена -->
+            {% if b[4] == "Подтверждена" %}
+            <div class="status-badge confirmed">
+                <i class="fas fa-check-circle"></i> Запись подтверждена
+            </div>
+            {% elif b[4] == "Завершена" %}
+            <div class="status-badge completed">
+                <i class="fas fa-check-double"></i> Запись завершена
+            </div>
+            {% endif %}
+
+            <div class="card-actions">
+                <a href="/delete_booking/{{ b[0] }}" class="btn-cancel" onclick="return confirm('Отменить запись?')">
+                    <i class="fas fa-trash-alt"></i> Отменить
+                </a>
+                <a href="{{ url_for('index') }}" class="btn-home">
+                    <i class="fas fa-home"></i> Главная
+                </a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    {% if not bookings %}
+    <div class="empty-state">
+        <i class="fas fa-calendar-times"></i>
+        <p>У вас пока нет записей</p>
+        <a href="/booking" class="btn-book-now">Записаться</a>
+    </div>
+    {% endif %}
+</section>
+
+<style>
+/* ========== НОВЫЕ СТИЛИ ДЛЯ МОИХ ЗАПИСЕЙ ========== */
+.my-bookings-new {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 50px 20px;
+    background: linear-gradient(135deg, #fefaf5 0%, #fff5f0 100%);
+    min-height: calc(100vh - 150px);
+}
+
+.bookings-header {
+    text-align: center;
+    margin-bottom: 50px;
+}
+
+.bookings-header h1 {
+    font-size: 36px;
+    color: #2d1810;
+    margin-bottom: 10px;
+    font-weight: 700;
+}
+
+.bookings-header h1 i {
+    color: #f5a623;
+    margin-right: 12px;
+}
+
+.bookings-subtitle {
+    color: #8b5e3c;
+    font-size: 16px;
+}
+
+.booking-grid-new {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 30px;
+}
+
+.booking-card-new {
+    background: white;
+    border-radius: 20px;
+    padding: 25px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+    border: 1px solid rgba(245, 166, 35, 0.1);
+}
+
+.booking-card-new:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
+}
+
+.card-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #f0e0d4;
+}
+
+.service-icon {
+    width: 45px;
+    height: 45px;
+    background: linear-gradient(135deg, #f5a623 0%, #ff6b6b 100%);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.service-icon i {
+    font-size: 22px;
+    color: white;
+}
+
+.card-header h3 {
+    font-size: 20px;
+    color: #2d1810;
+    font-weight: 600;
+    margin: 0;
+}
+
+.card-details {
+    margin-bottom: 20px;
+}
+
+.detail-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid #f5ebe3;
+}
+
+.detail-item:last-child {
+    border-bottom: none;
+}
+
+.detail-item i {
+    width: 24px;
+    color: #f5a623;
+    font-size: 16px;
+}
+
+.detail-item span {
+    color: #4a3728;
+    font-size: 15px;
+}
+
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    border-radius: 25px;
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 20px;
+}
+
+.status-badge.confirmed {
+    background: #e8f5e9;
+    color: #2e7d32;
+}
+
+.status-badge.completed {
+    background: #e3f2fd;
+    color: #1565c0;
+}
+
+.card-actions {
+    display: flex;
+    gap: 12px;
+}
+
+.btn-cancel, .btn-home {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 16px;
+    border-radius: 10px;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.btn-cancel {
+    background: #fee2e2;
+    color: #dc2626;
+}
+
+.btn-cancel:hover {
+    background: #dc2626;
+    color: white;
+}
+
+.btn-home {
+    background: #f0e0d4;
+    color: #8b5e3c;
+}
+
+.btn-home:hover {
+    background: #f5a623;
+    color: white;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 80px 20px;
+    background: white;
+    border-radius: 20px;
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+.empty-state i {
+    font-size: 64px;
+    color: #f0e0d4;
+    margin-bottom: 20px;
+}
+
+.empty-state p {
+    font-size: 18px;
+    color: #8b5e3c;
+    margin-bottom: 25px;
+}
+
+.btn-book-now {
+    display: inline-block;
+    padding: 12px 30px;
+    background: linear-gradient(135deg, #f5a623 0%, #ff6b6b 100%);
+    color: white;
+    text-decoration: none;
+    border-radius: 12px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-book-now:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(245, 166, 35, 0.3);
+}
+
+/* Адаптив */
+@media (max-width: 768px) {
+    .booking-grid-new {
+        grid-template-columns: 1fr;
+    }
+    
+    .bookings-header h1 {
+        font-size: 28px;
+    }
+    
+    .booking-card-new {
+        padding: 20px;
+    }
+}
+</style>
+
+</body>
+</html>

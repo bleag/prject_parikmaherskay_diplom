@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>Создать запись — Админка | StyleParic</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+    /* СБРАСЫВАЕМ ВЛИЯНИЕ СТАРЫХ СТИЛЕЙ */
+    .admin-create-container,
+    .admin-create-container * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+    
+    body.admin-create-page {
+        font-family: 'Inter', sans-serif;
+        background: linear-gradient(135deg, #fefaf5 0%, #fff5f0 100%);
+        min-height: 100vh;
+        margin: 0;
+        padding: 0;
+    }
+    
+    /* Шапка */
+    .admin-create-page .admin-header {
+        background: white !important;
+        padding: 20px 40px !important;
+        display: flex !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+        border-bottom: 1px solid rgba(245, 166, 35, 0.2) !important;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05) !important;
+        flex-wrap: wrap !important;
+        gap: 15px !important;
+    }
+    
+    .admin-create-page .admin-header h1 {
+        font-size: 24px !important;
+        color: #2d1810 !important;
+        font-weight: 700 !important;
+        margin: 0 !important;
+    }
+    
+    .admin-create-page .admin-header h1 i {
+        color: #f5a623 !important;
+        margin-right: 10px !important;
+    }
+    
+    .admin-create-page .back-btn {
+        display: inline-flex !important;
+        align-items: center !important;
+        gap: 8px !important;
+        padding: 10px 20px !important;
+        background: #f0e0d4 !important;
+        color: #8b5e3c !important;
+        text-decoration: none !important;
+        border-radius: 10px !important;
+        font-weight: 500 !important;
+        transition: all 0.3s ease !important;
+        border: none !important;
+    }
+    
+    .admin-create-page .back-btn:hover {
+        background: #f5a623 !important;
+        color: white !important;
+        transform: translateX(-3px) !important;
+    }
+    
+    /* Основной контейнер */
+    .admin-create-page .admin-create-container {
+        max-width: 600px !important;
+        margin: 50px auto !important;
+        padding: 0 20px !important;
+    }
+    
+    .admin-create-page .admin-create-wrapper {
+        background: white !important;
+        border-radius: 24px !important;
+        padding: 40px !important;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08) !important;
+        border: 1px solid rgba(245, 166, 35, 0.1) !important;
+    }
+    
+    .admin-create-page .form-icon {
+        text-align: center !important;
+        margin-bottom: 30px !important;
+    }
+    
+    .admin-create-page .form-icon i {
+        font-size: 48px !important;
+        color: #f5a623 !important;
+    }
+    
+    .admin-create-page .admin-create-form {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 22px !important;
+    }
+    
+    .admin-create-page .form-group {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 8px !important;
+        margin: 0 !important;
+    }
+    
+    .admin-create-page .form-group label {
+        font-weight: 600 !important;
+        color: #2d1810 !important;
+        font-size: 14px !important;
+        display: flex !important;
+        align-items: center !important;
+        gap: 8px !important;
+        margin: 0 !important;
+    }
+    
+    .admin-create-page .form-group label i {
+        color: #f5a623 !important;
+        font-size: 14px !important;
+    }
+    
+    .admin-create-page .form-group input,
+    .admin-create-page .form-group select {
+        padding: 14px 16px !important;
+        border: 2px solid #f0e0d4 !important;
+        border-radius: 12px !important;
+        font-size: 15px !important;
+        font-family: 'Inter', sans-serif !important;
+        transition: all 0.3s ease !important;
+        background: white !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+        margin: 0 !important;
+    }
+    
+    .admin-create-page .form-group input:focus,
+    .admin-create-page .form-group select:focus {
+        outline: none !important;
+        border-color: #f5a623 !important;
+        box-shadow: 0 0 0 4px rgba(245, 166, 35, 0.1) !important;
+    }
+    
+    .admin-create-page .btn-primary {
+        background: linear-gradient(135deg, #f5a623 0%, #ff6b6b 100%) !important;
+        color: white !important;
+        border: none !important;
+        padding: 16px 24px !important;
+        border-radius: 12px !important;
+        font-size: 16px !important;
+        font-weight: 600 !important;
+        cursor: pointer !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 10px !important;
+        transition: all 0.3s ease !important;
+        margin-top: 10px !important;
+        width: 100% !important;
+    }
+    
+    .admin-create-page .btn-primary:hover {
+        transform: translateY(-2px) !important;
+        box-shadow: 0 10px 20px rgba(245, 166, 35, 0.3) !important;
+    }
+    
+    .admin-create-page .error-message {
+        background: #fee2e2 !important;
+        color: #dc2626 !important;
+        padding: 14px 18px !important;
+        border-radius: 12px !important;
+        margin-bottom: 20px !important;
+        display: flex !important;
+        align-items: center !important;
+        gap: 10px !important;
+        font-size: 14px !important;
+        border-left: 4px solid #dc2626 !important;
+    }
+    
+    .admin-create-page .error-message i {
+        font-size: 18px !important;
+    }
+    
+    @media (max-width: 640px) {
+        .admin-create-page .admin-header {
+            padding: 15px 20px !important;
+            flex-direction: column !important;
+            text-align: center !important;
+        }
+        
+        .admin-create-page .admin-create-wrapper {
+            padding: 24px !important;
+        }
+        
+        .admin-create-page .admin-header h1 {
+            font-size: 20px !important;
+        }
+    }
+</style>
+</head>
+<body class="admin-create-page">
+
+<header>
+    <div class="admin-header">
+        <h1><i class="fas fa-plus-circle"></i> Создать новую запись</h1>
+        <a href="/admin" class="back-btn"><i class="fas fa-arrow-left"></i> Назад в админку</a>
+    </div>
+</header>
+
+<main class="admin-create-container">
+    <div class="admin-create-wrapper">
+        <div class="form-icon">
+            <i class="fas fa-calendar-plus"></i>
+        </div>
+        
+        {% if error %}
+        <div class="error-message">
+            <i class="fas fa-exclamation-circle"></i>
+            <span>{{ error }}</span>
+        </div>
+        {% endif %}
+
+        <form method="POST" class="admin-create-form" id="admin-create-form">
+            <div class="form-group">
+                <label for="name"><i class="fas fa-user"></i> Имя клиента</label>
+                <input type="text" id="name" name="name" required placeholder="Введите имя"
+                       value="{{ name if name else request.form.name if request.method=='POST' else '' }}">
+            </div>
+
+            <div class="form-group">
+                <label for="phone"><i class="fas fa-phone"></i> Телефон</label>
+                <input type="tel" id="phone" name="phone" required placeholder="+7 (999) 999-99-99"
+                       value="{{ phone if phone else request.form.phone if request.method=='POST' else '' }}">
+            </div>
+
+            <div class="form-group">
+                <label for="service"><i class="fas fa-cut"></i> Услуга</label>
+                <input type="text" id="service" name="service" required placeholder="Пример: Женская стрижка"
+                       value="{{ service if service else request.form.service if request.method=='POST' else '' }}">
+            </div>
+
+            <div class="form-group">
+                <label for="date-input"><i class="fas fa-calendar-alt"></i> Дата</label>
+                <input type="date" id="date-input" name="date" required
+                       value="{{ selected_date if selected_date else request.form.date if request.method=='POST' else '' }}">
+            </div>
+
+            <div class="form-group">
+                <label for="master-select"><i class="fas fa-user-tie"></i> Мастер</label>
+                <select name="master" id="master-select" required>
+                    <option value="">Сначала выберите дату</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="time-select"><i class="fas fa-clock"></i> Время</label>
+                <select id="time-select" name="time" required>
+                    <option value="">Сначала выберите дату</option>
+                </select>
+            </div>
+
+            <button type="submit" class="btn-primary">
+                <i class="fas fa-save"></i> Создать запись
+            </button>
+        </form>
+    </div>
+</main>
+
+<script>
+const dateInput = document.getElementById('date-input');
+const timeSelect = document.getElementById('time-select');
+const masterSelect = document.getElementById('master-select');
+
+const times = ["09:00","09:30","10:00","10:30","11:00","11:30","12:00","12:30","13:00",
+               "13:30","14:00","14:30","15:00","15:30","16:00","16:30","17:00","17:30",
+               "18:00","18:30","19:00","19:30"];
+
+function updateTimes() {
+    const date = dateInput.value;
+    if (!date) return;
+
+    fetch(`/get_busy_times_admin?date=${date}`)
+        .then(res => res.json())
+        .then(data => {
+            timeSelect.innerHTML = '<option value="">Выберите время</option>';
+            times.forEach(t => {
+                if (!data.busy.includes(t)) {
+                    const option = document.createElement('option');
+                    option.value = t;
+                    option.text = t;
+                    timeSelect.appendChild(option);
+                }
+            });
+
+            masterSelect.innerHTML = '<option value="">Выбрать мастера</option>';
+            if (data.masters && data.masters.length > 0) {
+                data.masters.forEach(m => {
+                    const option = document.createElement('option');
+                    option.value = m;
+                    option.text = m;
+                    masterSelect.appendChild(option);
+                });
+            }
+        });
+}
+
+dateInput.addEventListener('change', updateTimes);
+
+if (dateInput.value) {
+    updateTimes();
+}
+</script>
+
+</body>
+</html>
