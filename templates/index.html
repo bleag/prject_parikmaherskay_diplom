@@ -82,11 +82,11 @@
         .new-header .nav-left a {
             text-decoration: none;
             color: #8b5e3c;
-            font-weight: 500;
-            padding: 10px 20px;
+            font-weight: 600;
+            padding: 12px 28px;
             border-radius: 30px;
             transition: all 0.3s ease;
-            font-size: 14px;
+            font-size: 18px;
             background: #fef5ea;
         }
         
@@ -389,25 +389,35 @@
         }
         
         .review-card {
-            background: white;
+            background: linear-gradient(135deg, #c47a10 0%, #c44040 100%);
             padding: 25px;
             width: 280px;
             border-radius: 28px;
-            box-shadow: 0 12px 20px rgba(0,0,0,0.05);
-            transition: all 0.2s;
+            box-shadow: 0 12px 20px rgba(0,0,0,0.15);
+            transition: all 0.3s ease;
             text-align: left;
-            border: 1px solid rgba(245,166,35,0.2);
+            border: none;
+        }
+        
+        .review-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 30px rgba(0, 0, 0, 0.3);
         }
         
         .review-card h3 {
-            color: #f5a623;
+            color: white;
             margin-bottom: 12px;
             font-size: 20px;
         }
         
         .review-card p {
             margin: 8px 0;
-            color: #4a2e22;
+            color: rgba(255, 255, 255, 0.85);
+        }
+        
+        .review-card p:first-of-type {
+            color: #fff0cc;
+            font-weight: 500;
         }
         
         .all-reviews-btn {
@@ -507,7 +517,6 @@
         </div>
         
         <div class="nav-left" id="navLeft">
-            <a href="{{ url_for('index') }}">Главная</a>
             <a href="{{ url_for('about') }}">О нас</a>
             <a href="{{ url_for('services') }}">Услуги</a>
         </div>

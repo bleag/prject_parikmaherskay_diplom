@@ -2,20 +2,188 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>О нас | StyleParic</title>
+    <title>О нас | Парикмахерская "Стиль"</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* Дополнительные стили поверх твоих */
-        .about-container {
-            background: rgba(255, 255, 255, 0.94);
-            backdrop-filter: blur(2px);
-            max-width: 800px;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #fef9f2;
+            color: #2d1810;
+        }
+
+        /* ===== ШАПКА ===== */
+        .new-header {
+            background: white;
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(245, 166, 35, 0.2);
+        }
+        
+        .new-header .container {
+            max-width: 1400px;
             margin: 0 auto;
+            padding: 12px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        
+        .new-header .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+        }
+        
+        .new-header .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #f5a623 0%, #ff6b6b 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .new-header .logo-icon i {
+            font-size: 22px;
+            color: white;
+        }
+        
+        .new-header .logo-text {
+            font-size: 20px;
+            font-weight: 800;
+            color: #2d1810;
+            white-space: nowrap;
+        }
+        
+        .new-header .logo-text span {
+            color: #f5a623;
+        }
+        
+        .new-header .nav-left {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            flex-wrap: wrap;
+        }
+        
+        .new-header .nav-left a {
+            text-decoration: none;
+            color: #8b5e3c;
+            font-weight: 600;
+            padding: 12px 28px;
+            border-radius: 30px;
+            transition: all 0.3s ease;
+            font-size: 16px;
+            background: #fef5ea;
+        }
+        
+        .new-header .nav-left a:hover,
+        .new-header .nav-left a.active {
+            background: #f5a623;
+            color: white;
+        }
+        
+        .new-header .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .new-header .btn-action {
+            background: linear-gradient(135deg, #f5a623 0%, #ff6b6b 100%);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+        
+        .new-header .btn-action:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(245, 166, 35, 0.3);
+        }
+        
+        .new-header .login-btn {
+            background: #f0e0d4;
+            color: #8b5e3c;
+            padding: 10px 20px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        .new-header .login-btn:hover {
+            background: #f5a623;
+            color: white;
+        }
+        
+        .new-header .burger-menu {
+            display: none;
+            font-size: 28px;
+            cursor: pointer;
+            color: #2d1810;
+        }
+        
+        /* ===== СТРАНИЦА "О НАС" ===== */
+        .about-page {
+            position: relative;
+            min-height: calc(100vh - 160px);
+            padding: 60px 20px;
+        }
+        
+        /* Фоновое изображение */
+        .about-page::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: url('/static/pp.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            z-index: 0;
+        }
+        
+        /* Затемнение для читаемости */
+        .about-page::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1;
+        }
+        
+        .about-container {
+            position: relative;
+            z-index: 2;
+            max-width: 900px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(2px);
+            border-radius: 28px;
             padding: 50px;
-            border-radius: 24px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
             border: 1px solid rgba(245, 166, 35, 0.2);
         }
         
@@ -34,16 +202,21 @@
         
         .about-container p {
             font-size: 16px;
-            line-height: 1.7;
+            line-height: 1.8;
             color: #4a3728;
             margin-bottom: 20px;
         }
         
         .about-container h2 {
-            font-size: 22px;
+            font-size: 24px;
             color: #2d1810;
             margin: 30px 0 20px;
             font-weight: 600;
+        }
+        
+        .about-container h2 i {
+            color: #f5a623;
+            margin-right: 10px;
         }
         
         .about-container ul {
@@ -69,14 +242,55 @@
         .about-container ul li i {
             color: #f5a623;
             width: 24px;
-            font-size: 18px;
         }
         
-        @media (max-width: 640px) {
+        /* ===== ФУТЕР ===== */
+        .footer {
+            position: relative;
+            z-index: 2;
+            background: #2d1a10;
+            color: #f2e0cf;
+            padding: 40px 20px 30px;
+            text-align: center;
+        }
+        
+        .footer-contacts h3 {
+            font-size: 24px;
+            margin-bottom: 18px;
+            color: #f5a623;
+        }
+        
+        .footer-contacts p {
+            margin: 8px 0;
+            font-size: 16px;
+        }
+        
+        .footer-contacts a {
+            color: #ffbc6e;
+            text-decoration: none;
+        }
+        
+        @media (max-width: 1024px) {
+            .new-header .container {
+                padding: 12px 20px;
+            }
+            .new-header .burger-menu {
+                display: block;
+            }
+            .new-header .nav-left,
+            .new-header .nav-right {
+                display: none;
+                width: 100%;
+                flex-direction: column;
+                padding: 20px 0;
+            }
+            .new-header .nav-left.active,
+            .new-header .nav-right.active {
+                display: flex;
+            }
             .about-container {
                 padding: 30px 20px;
             }
-            
             .about-container h1 {
                 font-size: 26px;
             }
@@ -85,18 +299,36 @@
 </head>
 <body>
 
-<header>
-    <div class="logo">Парикмахерская "Стиль"</div>
-    <nav>
-        <a href="{{ url_for('index') }}">Главная</a>
-        <a href="{{ url_for('about') }}" style="color:#f5a623;">О нас</a>
-        <a href="{{ url_for('services') }}">Услуги</a>
-        <a href="{{ url_for('login') }}">Войти</a>
-        <a href="{{ url_for('booking') }}" class="btn-primary">Записаться</a>
-    </nav>
+<!-- ШАПКА -->
+<header class="new-header">
+    <div class="container">
+        <a href="/" class="logo-area">
+            <div class="logo-icon">
+                <i class="fas fa-scissors"></i>
+            </div>
+            <div class="logo-text">Парикмахерская <span>"Стиль"</span></div>
+        </a>
+        
+        <div class="burger-menu" onclick="toggleMenu()">
+            <i class="fas fa-bars"></i>
+        </div>
+        
+        <div class="nav-left" id="navLeft">
+            <a href="/">Главная</a>
+            <a href="/about" class="active">О нас</a>
+            <a href="/services">Услуги</a>
+        </div>
+        
+        <div class="nav-right" id="navRight">
+            <a href="/booking" class="btn-action">Записаться</a>
+            <a href="/review" class="btn-action">Отзыв</a>
+            <a href="/login" class="login-btn">Войти</a>
+        </div>
+    </div>
 </header>
 
-<section class="about-section">
+<!-- СТРАНИЦА "О НАС" -->
+<section class="about-page">
     <div class="about-container">
         <h1><i class="fas fa-scissors"></i> О парикмахерской «Стиль»</h1>
 
@@ -124,9 +356,24 @@
     </div>
 </section>
 
-<footer>
-    <p>© 2026 Парикмахерская «Стиль»</p>
+<!-- ФУТЕР -->
+<footer class="footer">
+    <div class="footer-contacts">
+        <h3>Общая информация</h3>
+        <p>📞 Телефон: <a href="tel:2606905">260-69-05</a></p>
+        <p>📍 Адрес: г. Новосибирск, ул. Бориса Богаткова 194/2</p>
+        <p>Режим работы: 9:00 - 20:00 без выходных</p>
+    </div>
 </footer>
+
+<script>
+function toggleMenu() {
+    const navLeft = document.getElementById('navLeft');
+    const navRight = document.getElementById('navRight');
+    if (navLeft) navLeft.classList.toggle('active');
+    if (navRight) navRight.classList.toggle('active');
+}
+</script>
 
 </body>
 </html>

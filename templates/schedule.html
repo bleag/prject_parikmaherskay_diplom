@@ -208,7 +208,6 @@
             <i class="fas fa-calendar-alt"></i>
         </div>
         <h1>Расписание мастеров</h1>
-        <p>График работы наших специалистов</p>
     </div>
     
     {% if session.get('role') == 1 %}
@@ -223,9 +222,9 @@
             <thead>
                 <tr>
                     <th><i class="fas fa-calendar-day"></i> Дата</th>
-                    {% for master in masters %}
-                        <th><i class="fas fa-user-tie"></i> {{ master }}</th>
-                    {% endfor %}
+                    <th><i class="fas fa-user-tie"></i> Ольга <span style="font-size: 12px; opacity: 0.9;">(маникюр)</span></th>
+                    <th><i class="fas fa-user-tie"></i> Ирина <span style="font-size: 12px; opacity: 0.9;">(парикмахер)</span></th>
+                    <th><i class="fas fa-user-tie"></i> Марина <span style="font-size: 12px; opacity: 0.9;">(парикмахер)</span></th>
                 </tr>
             </thead>
             <tbody>
