@@ -2064,3 +2064,130 @@ display:block;
         font-size: 20px;
     }
 }
+
+
+
+/* ===== ТЁМНАЯ ТЕМА ===== */
+body.dark-theme {
+    background: #1a1a2e !important;
+    color: #eee !important;
+}
+
+body.dark-theme .new-header {
+    background: #16213e !important;
+    border-bottom-color: #f5a623 !important;
+}
+
+body.dark-theme .new-header .logo-text,
+body.dark-theme .new-header .logo-text span {
+    color: #f5a623 !important;
+}
+
+body.dark-theme .new-header .nav-left a {
+    background: #0f3460 !important;
+    color: #ddd !important;
+}
+
+body.dark-theme .new-header .nav-left a:hover {
+    background: #f5a623 !important;
+    color: white !important;
+}
+
+body.dark-theme .new-header .login-btn {
+    background: #0f3460 !important;
+    color: #ddd !important;
+}
+
+body.dark-theme .services,
+body.dark-theme .reviews {
+    background: #16213e !important;
+}
+
+body.dark-theme .card,
+body.dark-theme .review-card,
+body.dark-theme .service-block {
+    background: #0f3460 !important;
+    color: #ddd !important;
+}
+
+body.dark-theme .card h3,
+body.dark-theme .review-card h3 {
+    color: #f5a623 !important;
+}
+
+body.dark-theme .review-card p {
+    color: #ccc !important;
+}
+
+body.dark-theme .footer {
+    background: #0a0f1a !important;
+}
+
+body.dark-theme .footer-contacts h3 {
+    color: #f5a623 !important;
+}
+
+body.dark-theme .price-list li {
+    color: #ccc !important;
+    border-bottom-color: #2a3a5a !important;
+}
+
+body.dark-theme .price-list li span {
+    background: #1a2a4a !important;
+}
+
+body.dark-theme .schedule-table-container {
+    background: #0f3460 !important;
+}
+
+body.dark-theme .schedule-table td {
+    border-bottom-color: #2a3a5a !important;
+    color: #ddd !important;
+}
+
+body.dark-theme .date-cell {
+    background: #16213e !important;
+    color: #f5a623 !important;
+}
+
+body.dark-theme .schedule-table tr:hover td {
+    background: #1a3a5a !important;
+}
+
+body.dark-theme .about-container {
+    background: #0f3460 !important;
+}
+
+body.dark-theme .about-container p,
+body.dark-theme .about-container li {
+    color: #ccc !important;
+}
+
+body.dark-theme .about-container h1,
+body.dark-theme .about-container h2 {
+    color: #f5a623 !important;
+}
+
+body.dark-theme .booking-container {
+    background: rgba(15, 52, 96, 0.95) !important;
+}
+
+body.dark-theme .booking-container input,
+body.dark-theme .booking-container select {
+    background: #16213e !important;
+    color: #ddd !important;
+    border-color: #2a3a5a !important;
+}
+
+body.dark-theme .stats-container .stat-card {
+    background: #0f3460 !important;
+}
+
+body.dark-theme .stats-container .stat-label {
+    color: #ccc !important;
+}
+
+body.dark-theme .admin-note {
+    background: #1a2a4a !important;
+    color: #ddd !important;
+}

@@ -5,6 +5,9 @@ from werkzeug.security import generate_password_hash, check_password_hash
 import re
 app = Flask(__name__)
 app.secret_key = "secret123"
+import vk_api
+import random
+
 
 # -------- Подключение к PostgreSQL --------
 def get_db_connection():
@@ -15,6 +18,51 @@ def get_db_connection():
         password="123"        # пароль
     )
     return conn
+
+
+# ===== НАСТРОЙКИ VK =====
+VK_TOKEN = "vk1.a.jBdNIw9wVqkRL7a_dYg_befQXHxgPsMMrJre08Z2O6OZ1_c30LNdbY1D27aD0ODX8U8Fh1EFIkhgSGCYgd3bZSV2PLfdOya6T19QUH1mB_4jjb7yeBSWiJ_5XdyxqOtSlatJB8eftUKcYelG1QWfqPqPQkkRxufvDJTZ8wmFj-MANg06VZXyD6ft1Ngb7qXIAuCNQhq3GPJk9ksOnbO08Q"
+VK_GROUP_ID = -233673601  # ID вашей группы (с минусом)
+
+# Функция отправки поста на стену группы
+def send_vk_post(message):
+    """Публикует пост на стене группы ВКонтакте"""
+    try:
+       
+        
+        # Авторизация
+        vk_session = vk_api.VkApi(token=VK_TOKEN)
+        vk = vk_session.get_api()
+        
+        # Отправка поста
+        vk.wall.post(
+            owner_id=VK_GROUP_ID,
+            message=message,
+            from_group=1  # От имени группы
+        )
+        print("✅ Пост опубликован в VK")
+        return True
+    except Exception as e:
+        print(f"❌ Ошибка публикации в VK: {e}")
+        return False
+
+# Функция отправки личного сообщения (опционально)
+def send_vk_message(user_id, message):
+    """Отправляет личное сообщение пользователю VK"""
+    try:
+        vk_session = vk_api.VkApi(token=VK_TOKEN)
+        vk = vk_session.get_api()
+        
+        vk.messages.send(
+            user_id=user_id,
+            message=message,
+            random_id=random.randint(1, 999999)
+        )
+        print(f"✅ Личное сообщение отправлено пользователю {user_id}")
+        return True
+    except Exception as e:
+        print(f"❌ Ошибка отправки сообщения: {e}")
+        return False
 
 
 def time_to_minutes(time_str):
@@ -283,8 +331,29 @@ def booking():
             
             conn.commit()
             
+            # ===== ОТПРАВКА УВЕДОМЛЕНИЯ В VK =====
+            try:
+                post_message = f"🆕 НОВАЯ ЗАПИСЬ!\n\n"
+                post_message += f"👤 Клиент: {name}\n"
+                post_message += f"✂️ Услуга: {service}\n"
+                post_message += f"👨‍💼 Мастер: {master}\n"
+                post_message += f"📅 Дата: {date}\n"
+                post_message += f"⏰ Время: {time}\n"
+                post_message += f"📱 Телефон: {phone}\n"
+                post_message += f"👤 Пользователь: {session['username']}\n"
+                
+                # Отправляем в VK
+                send_vk_post(post_message)
+            except Exception as vk_error:
+                print(f"Ошибка отправки в VK: {vk_error}")
+            # ===== КОНЕЦ ОТПРАВКИ =====
+            
+            return redirect("/my_bookings")
+            
         except Exception as e:
             print(f"Ошибка при бронировании: {e}")
+            cursor.close()
+            conn.close()
             return render_template(
                 "booking.html",
                 error="Произошла ошибка при записи. Попробуйте позже.",
@@ -293,14 +362,8 @@ def booking():
                 service=service,
                 selected_date=date
             )
-        finally:
-            cursor.close()
-            conn.close()
-        
-        return redirect("/my_bookings")
     
     return render_template("booking.html", selected_date=request.args.get("date"))
-
 # -------- Мои бронирования --------
 @app.route("/my_bookings")
 def my_bookings():
@@ -499,17 +562,45 @@ def get_busy_times_admin():
     conn = get_db_connection()
     cursor = conn.cursor()
 
-    # Времена, которые уже заняты
-    cursor.execute("SELECT time FROM appointments WHERE date=%s", (date,))
-    busy = [row[0].strftime("%H:%M") for row in cursor.fetchall()]
+    # Получаем ВСЕ записи с мастером и длительностью
+    cursor.execute("""
+        SELECT master, time, service FROM appointments 
+        WHERE date=%s AND status != 'Завершена'
+    """, (date,))
+    bookings = cursor.fetchall()
+    
+    # Формируем занятые слоты ДЛЯ КАЖДОГО МАСТЕРА отдельно
+    busy_by_master = {}
+    
+    for booking in bookings:
+        master = booking[0]
+        time_str = booking[1].strftime("%H:%M") if hasattr(booking[1], 'strftime') else booking[1]
+        service = booking[2]
+        
+        start_min = time_to_minutes(time_str)
+        duration = get_service_duration(service)
+        end_min = start_min + duration
+        
+        if master not in busy_by_master:
+            busy_by_master[master] = []
+        
+        # Добавляем все 30-минутные слоты внутри интервала для этого мастера
+        for slot_min in range(start_min, end_min, 30):
+            busy_by_master[master].append(minutes_to_time(slot_min))
 
-    # Мастера, которые работают в этот день
+    # Получаем список всех мастеров, которые работают в этот день
     cursor.execute("SELECT master_name FROM schedule WHERE date=%s AND note='Работает'", (date,))
     masters = [row[0] for row in cursor.fetchall()]
 
     cursor.close()
     conn.close()
-    return {"busy": busy, "masters": masters}
+    
+    # Возвращаем занятые слоты для каждого мастера
+    return {
+        "busy": [],  # для совместимости со старым кодом
+        "masters": masters,
+        "busyByMaster": busy_by_master  # новый формат
+    }
 
 from datetime import datetime, timedelta
 

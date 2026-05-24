@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Парикмахерская "Стиль"</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
+        <style>
         * {
             margin: 0;
             padding: 0;
@@ -16,9 +16,10 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #fef9f2;
             color: #2d1810;
+            transition: background 0.3s ease, color 0.3s ease;
         }
 
-        /* ===== НОВАЯ ШАПКА (без изменений, стили как у вас) ===== */
+        /* ===== НОВАЯ ШАПКА ===== */
         .new-header {
             background: white;
             box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05);
@@ -26,6 +27,7 @@
             top: 0;
             z-index: 1000;
             border-bottom: 1px solid rgba(245, 166, 35, 0.2);
+            transition: background 0.3s ease;
         }
         
         .new-header .container {
@@ -207,7 +209,7 @@
             color: #2d1810;
         }
         
-        /* ===== СЕКЦИЯ HERO: фон с затемнением (картинка salon-bg.webp) ===== */
+        /* ===== СЕКЦИЯ HERO ===== */
         .hero {
             position: relative;
             height: 600px;
@@ -218,7 +220,6 @@
             overflow: hidden;
         }
         
-        /* Легкое затемнение для читаемости текста (не трогаем стиль кнопки) */
         .hero::before {
             content: "";
             position: absolute;
@@ -246,7 +247,6 @@
             text-shadow: 0 1px 5px rgba(0,0,0,0.3);
         }
         
-        /* ГЛАВНАЯ КНОПКА — ТОЧНО ТАКОЙ ЖЕ ГРАДИЕНТ, КАК В ШАПКЕ */
         .hero-content .btn-primary {
             background: linear-gradient(135deg, #f5a623 0%, #ff6b6b 100%);
             color: white;
@@ -274,6 +274,7 @@
             padding: 70px 40px;
             text-align: center;
             background-color: #fffcf8;
+            transition: background 0.3s ease;
         }
         
         .services h2 {
@@ -335,11 +336,12 @@
             font-weight: 600;
         }
         
-        /* ===== ФУТЕР С КАРТОЙ ===== */
+        /* ===== ФУТЕР ===== */
         .footer {
             background: #2d1a10;
             color: #f2e0cf;
             padding: 40px 20px 30px;
+            transition: background 0.3s ease;
         }
         
         .footer-contacts h3 {
@@ -371,6 +373,7 @@
             padding: 60px 30px;
             background: #fef5ea;
             text-align: center;
+            transition: background 0.3s ease;
         }
         
         .reviews h2 {
@@ -436,6 +439,183 @@
             background: #f5a623;
             color: white;
             transform: translateY(-2px);
+        }
+        
+        /* ===== КНОПКА ТЕМЫ ===== */
+        .theme-toggle {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #fef5ea !important;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+        
+        .theme-toggle:hover {
+            background: #f5a623 !important;
+            transform: scale(1.05);
+        }
+        
+        .theme-toggle i {
+            font-size: 18px;
+            color: #8b5e3c;
+        }
+        
+        .theme-toggle:hover i {
+            color: white;
+        }
+        
+        /* ===== ТЁМНАЯ ТЕМА ===== */
+                /* ===== ТЁМНАЯ ТЕМА (СЕРАЯ/ЧЁРНАЯ) ===== */
+        body.dark-theme {
+            background: #1a1a1a !important;
+            color: #e0e0e0 !important;
+        }
+        
+        body.dark-theme .new-header {
+            background: #0d0d0d !important;
+            border-bottom-color: #f5a623 !important;
+        }
+        
+        body.dark-theme .new-header .logo-text,
+        body.dark-theme .new-header .logo-text span {
+            color: #f5a623 !important;
+        }
+        
+        body.dark-theme .new-header .nav-left a {
+            background: #2a2a2a !important;
+            color: #ccc !important;
+        }
+        
+        body.dark-theme .new-header .nav-left a:hover {
+            background: #f5a623 !important;
+            color: white !important;
+        }
+        
+        body.dark-theme .new-header .login-btn {
+            background: #2a2a2a !important;
+            color: #ccc !important;
+        }
+        
+        body.dark-theme .new-header .login-btn:hover {
+            background: #f5a623 !important;
+            color: white !important;
+        }
+        
+        body.dark-theme .services {
+            background: #1a1a1a !important;
+        }
+        
+        body.dark-theme .reviews {
+            background: #1a1a1a !important;
+        }
+        
+        body.dark-theme .card {
+            background: #2a2a2a !important;
+        }
+        
+        body.dark-theme .card h3 {
+            color: #f5a623 !important;
+        }
+        
+        body.dark-theme .review-card {
+            background: linear-gradient(135deg, #5a5a5a 0%, #3a3a3a 100%) !important;
+        }
+        
+        body.dark-theme .review-card h3,
+        body.dark-theme .review-card p {
+            color: white !important;
+        }
+        
+        body.dark-theme .footer {
+            background: #0a0a0a !important;
+        }
+        
+        body.dark-theme .footer-contacts h3 {
+            color: #f5a623 !important;
+        }
+        
+        body.dark-theme .footer-contacts p,
+        body.dark-theme .footer-contacts a {
+            color: #aaa !important;
+        }
+        
+        body.dark-theme .hero::before {
+            background: rgba(0, 0, 0, 0.7) !important;
+        }
+        
+        body.dark-theme .all-reviews-btn {
+            border-color: #f5a623 !important;
+            color: #f5a623 !important;
+        }
+        
+        body.dark-theme .all-reviews-btn:hover {
+            background: #f5a623 !important;
+            color: white !important;
+        }
+        
+        body.dark-theme .theme-toggle {
+            background: #2a2a2a !important;
+        }
+        
+        body.dark-theme .theme-toggle i {
+            color: #f5a623 !important;
+        }
+        
+        body.dark-theme .services h2,
+        body.dark-theme .reviews h2 {
+            color: #f5a623 !important;
+        }
+        
+        body.dark-theme .price-list li {
+            color: #ccc !important;
+            border-bottom-color: #333 !important;
+        }
+        
+        body.dark-theme .booking-container {
+            background: rgba(30, 30, 30, 0.95) !important;
+        }
+        
+        body.dark-theme .booking-container input,
+        body.dark-theme .booking-container select {
+            background: #2a2a2a !important;
+            color: #e0e0e0 !important;
+            border-color: #444 !important;
+        }
+        
+        body.dark-theme .about-container {
+            background: rgba(30, 30, 30, 0.95) !important;
+        }
+        
+        body.dark-theme .about-container p,
+        body.dark-theme .about-container li {
+            color: #ccc !important;
+        }
+        
+        body.dark-theme .schedule-table-container {
+            background: #2a2a2a !important;
+        }
+        
+        body.dark-theme .schedule-table td {
+            border-bottom-color: #333 !important;
+            color: #ccc !important;
+        }
+        
+        body.dark-theme .date-cell {
+            background: #1a1a1a !important;
+            color: #f5a623 !important;
+        }
+        
+        body.dark-theme .schedule-table tr:hover td {
+            background: #333 !important;
+        }
+        
+        body.dark-theme .admin-note {
+            background: #2a2a2a !important;
+            color: #ccc !important;
         }
         
         /* ===== АДАПТИВ ===== */
@@ -524,6 +704,9 @@
         <div class="nav-right" id="navRight">
             <a href="/booking" class="btn-action">Записаться</a>
             <a href="/review" class="btn-action">Отзыв</a>
+            <button onclick="toggleTheme()" class="theme-toggle" style="background: none; border: none; cursor: pointer; font-size: 20px; color: #8b5e3c;">
+                <i id="theme-icon" class="fas fa-moon"></i>
+            </button>
             
             {% if session.username %}
             <div class="profile-menu" id="profileMenu">
@@ -631,6 +814,40 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     }
 });
+
+// ===== ТЁМНАЯ ТЕМА =====
+function toggleTheme() {
+    const body = document.body;
+    const icon = document.getElementById('theme-icon');
+    
+    if (body.classList.contains('dark-theme')) {
+        body.classList.remove('dark-theme');
+        localStorage.setItem('theme', 'light');
+        icon.classList.remove('fa-sun');
+        icon.classList.add('fa-moon');
+    } else {
+        body.classList.add('dark-theme');
+        localStorage.setItem('theme', 'dark');
+        icon.classList.remove('fa-moon');
+        icon.classList.add('fa-sun');
+    }
+}
+
+// Проверяем сохранённую тему при загрузке
+document.addEventListener('DOMContentLoaded', function() {
+    const savedTheme = localStorage.getItem('theme');
+    const icon = document.getElementById('theme-icon');
+    
+    if (savedTheme === 'dark') {
+        document.body.classList.add('dark-theme');
+        if (icon) {
+            icon.classList.remove('fa-moon');
+            icon.classList.add('fa-sun');
+        }
+    }
+});
+// ===== КОНЕЦ ТЁМНОЙ ТЕМЫ =====
+
 </script>
 
 </body>

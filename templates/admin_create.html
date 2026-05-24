@@ -8,9 +8,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
-    /* СБРАСЫВАЕМ ВЛИЯНИЕ СТАРЫХ СТИЛЕЙ */
-    .admin-create-container,
-    .admin-create-container * {
+    * {
         margin: 0;
         padding: 0;
         box-sizing: border-box;
@@ -24,7 +22,6 @@
         padding: 0;
     }
     
-    /* Шапка */
     .admin-create-page .admin-header {
         background: white !important;
         padding: 20px 40px !important;
@@ -69,7 +66,6 @@
         transform: translateX(-3px) !important;
     }
     
-    /* Основной контейнер */
     .admin-create-page .admin-create-container {
         max-width: 600px !important;
         margin: 50px auto !important;
@@ -231,14 +227,19 @@
 
             <div class="form-group">
                 <label for="phone"><i class="fas fa-phone"></i> Телефон</label>
-                <input type="tel" id="phone" name="phone" required placeholder="+7 (999) 999-99-99"
+                <input type="tel" id="phone" name="phone" required placeholder="89131234567"
                        value="{{ phone if phone else request.form.phone if request.method=='POST' else '' }}">
             </div>
 
             <div class="form-group">
                 <label for="service"><i class="fas fa-cut"></i> Услуга</label>
-                <input type="text" id="service" name="service" required placeholder="Пример: Женская стрижка"
-                       value="{{ service if service else request.form.service if request.method=='POST' else '' }}">
+                <select id="service" name="service" required>
+                    <option value="">Выберите услугу</option>
+                    <option value="Мужская стрижка">Мужская стрижка (30 мин)</option>
+                    <option value="Женская стрижка">Женская стрижка (60 мин)</option>
+                    <option value="Окрашивание">Окрашивание (120 мин)</option>
+                    <option value="Маникюр">Маникюр (120 мин)</option>
+                </select>
             </div>
 
             <div class="form-group">
@@ -269,31 +270,44 @@
 </main>
 
 <script>
+// ===== ДЛИТЕЛЬНОСТЬ УСЛУГ =====
+const serviceDurationMap = {
+    "Мужская стрижка": 30,
+    "Женская стрижка": 60,
+    "Окрашивание": 120,
+    "Маникюр": 120
+};
+
+function timeToMinutes(timeStr) {
+    const [hours, minutes] = timeStr.split(':').map(Number);
+    return hours * 60 + minutes;
+}
+
 const dateInput = document.getElementById('date-input');
 const timeSelect = document.getElementById('time-select');
 const masterSelect = document.getElementById('master-select');
+const serviceSelect = document.getElementById('service');
 
-const times = ["09:00","09:30","10:00","10:30","11:00","11:30","12:00","12:30","13:00",
+const allTimeSlots = ["09:00","09:30","10:00","10:30","11:00","11:30","12:00","12:30","13:00",
                "13:30","14:00","14:30","15:00","15:30","16:00","16:30","17:00","17:30",
                "18:00","18:30","19:00","19:30"];
 
-function updateTimes() {
+let busySlotsByMaster = {}; // { "Ирина": ["10:00","10:30"], "Марина": ["11:00"] }
+
+async function updateTimes() {
     const date = dateInput.value;
-    if (!date) return;
+    const selectedService = serviceSelect.value;
+    
+    if (!date || !selectedService) {
+        timeSelect.innerHTML = '<option value="">Выберите дату и услугу</option>';
+        masterSelect.innerHTML = '<option value="">Сначала выберите дату</option>';
+        return;
+    }
 
     fetch(`/get_busy_times_admin?date=${date}`)
         .then(res => res.json())
         .then(data => {
-            timeSelect.innerHTML = '<option value="">Выберите время</option>';
-            times.forEach(t => {
-                if (!data.busy.includes(t)) {
-                    const option = document.createElement('option');
-                    option.value = t;
-                    option.text = t;
-                    timeSelect.appendChild(option);
-                }
-            });
-
+            // Заполняем мастеров
             masterSelect.innerHTML = '<option value="">Выбрать мастера</option>';
             if (data.masters && data.masters.length > 0) {
                 data.masters.forEach(m => {
@@ -303,76 +317,100 @@ function updateTimes() {
                     masterSelect.appendChild(option);
                 });
             }
+            
+            // Сохраняем занятые слоты по мастерам
+            busySlotsByMaster = {};
+            if (data.busyByMaster) {
+                busySlotsByMaster = data.busyByMaster;
+            } else if (data.busy) {
+                // fallback для старых данных
+                data.masters.forEach(master => {
+                    busySlotsByMaster[master] = data.busy || [];
+                });
+            }
+            
+            // Если выбран мастер, обновляем время
+            if (masterSelect.value) {
+                updateAvailableTimes();
+            }
         });
 }
 
-// ===== ФУНКЦИИ ДЛЯ ВАЛИДАЦИИ ТЕЛЕФОНА =====
-function validatePhone(phone) {
-    // Убираем все лишние символы
-    let cleaned = phone.replace(/[\s\-\(\)\+]/g, '');
+function updateAvailableTimes() {
+    const selectedMaster = masterSelect.value;
+    const selectedService = serviceSelect.value;
+    const duration = serviceDurationMap[selectedService] || 30;
     
-    // Если начинается с 8 и длина 11, убираем 8
-    if (cleaned.startsWith('8') && cleaned.length === 11) {
-        cleaned = cleaned.slice(1);
-    }
-    // Если начинается с 7 и длина 11, убираем 7
-    if (cleaned.startsWith('7') && cleaned.length === 11) {
-        cleaned = cleaned.slice(1);
-    }
-    
-    // Должно быть 10 цифр
-    return /^\d{10}$/.test(cleaned);
-}
-
-function formatPhone(input) {
-    let value = input.value.replace(/\D/g, '');
-    
-    if (value.length === 0) {
-        input.value = '';
+    if (!selectedMaster || !selectedService || !dateInput.value) {
+        timeSelect.innerHTML = '<option value="">Выберите мастера и услугу</option>';
         return;
     }
     
-    let formatted = '+7 (';
+    // Получаем занятые слоты ТОЛЬКО для выбранного мастера
+    const busySlots = busySlotsByMaster[selectedMaster] || [];
     
-    if (value.length >= 1) {
-        formatted += value.slice(0, 3);
-    }
-    if (value.length >= 4) {
-        formatted += ') ' + value.slice(3, 6);
-    }
-    if (value.length >= 7) {
-        formatted += '-' + value.slice(6, 8);
-    }
-    if (value.length >= 9) {
-        formatted += '-' + value.slice(8, 10);
+    const availableTimes = [];
+    
+    for (let slot of allTimeSlots) {
+        const slotMinutes = timeToMinutes(slot);
+        // Проверяем, не выходит ли за рабочее время
+        if (slotMinutes + duration > timeToMinutes("20:00")) continue;
+        
+        // Проверяем, не пересекается ли с занятыми слотами
+        let isBusy = false;
+        for (let busySlot of busySlots) {
+            const busyStart = timeToMinutes(busySlot);
+            const busyEnd = busyStart + 30; // стандартный слот 30 мин
+            const newEnd = slotMinutes + duration;
+            
+            if (slotMinutes < busyEnd && newEnd > busyStart) {
+                isBusy = true;
+                break;
+            }
+        }
+        
+        if (!isBusy) {
+            availableTimes.push(slot);
+        }
     }
     
-    input.value = formatted;
+    timeSelect.innerHTML = '<option value="">Выберите время</option>';
+    if (availableTimes.length === 0) {
+        const disabledOpt = document.createElement('option');
+        disabledOpt.textContent = 'Нет свободных окон';
+        disabledOpt.disabled = true;
+        timeSelect.appendChild(disabledOpt);
+    } else {
+        availableTimes.forEach(time => {
+            const option = document.createElement('option');
+            option.value = time;
+            option.text = time;
+            timeSelect.appendChild(option);
+        });
+    }
 }
-// ===== КОНЕЦ ФУНКЦИЙ =====
 
-// ===== ПРИВЯЗКА К ПОЛЮ ТЕЛЕФОНА =====
-const phoneField = document.getElementById('phone');
-if (phoneField) {
-    phoneField.addEventListener('input', function() {
-        formatPhone(this);
-    });
+// ===== ВАЛИДАЦИЯ ТЕЛЕФОНА (простая) =====
+function validatePhone(phone) {
+    let cleaned = phone.replace(/[\s\-\(\)\+]/g, '');
+    return /^\d{11}$/.test(cleaned);
 }
-// ===== КОНЕЦ ПРИВЯЗКИ =====
 
-// ===== ВАЛИДАЦИЯ ПЕРЕД ОТПРАВКОЙ ФОРМЫ =====
+// Валидация перед отправкой
 document.getElementById('admin-create-form').addEventListener('submit', function(e) {
     const phoneInput = document.getElementById('phone');
     if (!validatePhone(phoneInput.value)) {
         e.preventDefault();
-        alert('❌ Введите корректный номер телефона (10 цифр после +7)');
+        alert('❌ Введите корректный номер телефона (11 цифр, например: 89131234567)');
         phoneInput.focus();
         return false;
     }
 });
-// ===== КОНЕЦ ВАЛИДАЦИИ =====
 
+// Слушатели
 dateInput.addEventListener('change', updateTimes);
+serviceSelect.addEventListener('change', updateTimes);
+masterSelect.addEventListener('change', updateAvailableTimes);
 
 if (dateInput.value) {
     updateTimes();
